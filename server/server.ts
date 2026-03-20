@@ -4,7 +4,6 @@ dotenv.config();
 import path from "path";
 import express from "express";
 import cors from "cors";
-import serverless from "serverless-http";
 
 // Routes & DB
 import { connectDB } from "./config/db";
@@ -36,10 +35,14 @@ app.use("/api/upload", uploadRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
-  res.send("API is running on Vercel ✅");
+  res.send("API is running on Railway 🚀");
 });
 
 app.use(errorHandler);
 
-// ✅ THIS IS THE MOST IMPORTANT LINE
-export default serverless(app);
+// ✅ THIS IS REQUIRED FOR RAILWAY
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
