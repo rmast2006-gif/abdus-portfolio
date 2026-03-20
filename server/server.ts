@@ -1,40 +1,34 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import cors from "cors";
-import dotenv from "dotenv";
-
-// ✅ FIX: correct path resolution
 import { fileURLToPath } from "url";
+
+// Fix __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Load .env correctly
-dotenv.config({
-  path: path.resolve(process.cwd(), "server", ".env")
-});
-
-// ✅ Debug
-console.log("ENV PATH:", path.join(__dirname, ".env"));
+// Debug (optional)
 console.log("ENV TEST:", process.env.MONGO_URI);
 
 // Routes & DB
-import { connectDB } from "./server/config/db.ts";
-import projectRoutes from "./server/routes/projectRoutes.ts";
-import contactRoutes from "./server/routes/contactRoutes.ts";
-import adminAuthRoutes from "./server/routes/adminAuthRoutes.ts";
-import contentRoutes from "./server/routes/contentRoutes.ts";
-import skillRoutes from "./server/routes/skillRoutes.ts";
-import uploadRoutes from "./server/routes/uploadRoutes.ts";
-import { errorHandler } from "./server/middleware/errorHandler.ts";
+import { connectDB } from "./config/db";
+import projectRoutes from "./routes/projectRoutes";
+import contactRoutes from "./routes/contactRoutes";
+import adminAuthRoutes from "./routes/adminAuthRoutes";
+import contentRoutes from "./routes/contentRoutes";
+import skillRoutes from "./routes/skillRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
+import { errorHandler } from "./middleware/errorHandler";
 
 async function startServer() {
   const app = express();
 
-  // ✅ FIX: use env PORT
-  const PORT = Number(process.env.PORT) || 3000;
+  const PORT = Number(process.env.PORT) || 5000;
 
-  // ✅ Connect DB
+  // Connect DB
   await connectDB();
 
   // Middleware
@@ -52,26 +46,15 @@ async function startServer() {
   // Static uploads
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-  // Vite Dev Server
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(__dirname, "dist");
-    app.use(express.static(distPath));
-
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+  // Root route
+  app.get("/", (req, res) => {
+    res.send("API is running ✅");
+  });
 
   // Error Handler
   app.use(errorHandler);
 
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
   });
 }
