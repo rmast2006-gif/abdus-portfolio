@@ -23,6 +23,10 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend working 🚀" });
+});
+
 // ✅ ROUTES
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
