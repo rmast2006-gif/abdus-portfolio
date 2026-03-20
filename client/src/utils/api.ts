@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api"; // ✅ FIXED
+const BASE_URL = "https://abdus-portfolio-production.up.railway.app/api"; // ✅ FIXED
 
 const api = axios.create({
   baseURL: BASE_URL,
