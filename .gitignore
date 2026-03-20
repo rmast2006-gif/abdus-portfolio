@@ -10,3 +10,8 @@ coverage/
 !webpack.config.js
 src/**/*.js
 server/**/*.js
+node_modules
+.env
+dist
+build
+uploads

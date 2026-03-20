@@ -1,10 +1,15 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Load .env file with explicit path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 import express from "express";
-import path from "path";
 import cors from "cors";
-const __dirname = process.cwd();
+
 // Debug (optional)
 console.log("ENV TEST:", process.env.MONGO_URI);
 
