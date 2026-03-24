@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { apiGetProjects } from "../utils/api.ts";
-import { FALLBACK_PROJECTS } from "../utils/constants.ts";
 import { Project } from "../types.ts";
 
 export const useProjects = () => {
@@ -12,11 +11,15 @@ export const useProjects = () => {
     const getProjects = async () => {
       try {
         const { data } = await apiGetProjects();
-        setProjects(Array.isArray(data) && data.length > 0 ? data : FALLBACK_PROJECTS);
+
+        // ✅ ONLY real data (NO fallback)
+        setProjects(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Failed to fetch projects, using fallback data", err);
-        setProjects(FALLBACK_PROJECTS);
-        setError("Failed to fetch projects, using fallback data");
+        console.error("❌ Failed to fetch projects:", err);
+
+        // ❌ NO fallback
+        setProjects([]);
+        setError("Failed to fetch projects");
       } finally {
         setLoading(false);
       }
