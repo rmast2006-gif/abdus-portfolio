@@ -1,101 +1,94 @@
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, RoundedBox, MeshTransmissionMaterial, Stars } from "@react-three/drei";
+import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 // ─────────────────────────────────────────────
-// 3D IMAGE HOLDER (EMPTY FOR NOW)
-// You can later replace the material with texture
+// APPLE-STYLE MAIN ABOUT ORB (3D IMAGE HOLDER)
 // ─────────────────────────────────────────────
-const ImageHolder = () => {
+const GlassOrb = () => {
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
 
-    // Smooth rotation
+    // Smooth premium rotation
     ref.current.rotation.y = clock.getElapsedTime() * 0.3;
 
-    // Floating animation
+    // Floating "breathing" motion
     ref.current.position.y = Math.sin(clock.getElapsedTime()) * 0.2;
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.6}>
-      <RoundedBox
-        ref={ref}
-        args={[2.5, 3.5, 0.2]} // width, height, depth
-        radius={0.25}
-        smoothness={4}
-        position={[4, 0, 0]}
-      >
-        {/* Glass / premium look */}
+    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
+      <mesh ref={ref}>
+        <sphereGeometry args={[1.8, 128, 128]} />
+
+        {/* 🔥 Apple-style glass material */}
         <MeshTransmissionMaterial
-          thickness={0.6}
-          roughness={0.1}
           transmission={1}
-          ior={1.2}
-          chromaticAberration={0.05}
-          backside
+          roughness={0}
+          thickness={0.5}
+          ior={1.4}
+          chromaticAberration={0.06}
+          anisotropy={0.2}
+          distortion={0.15}
+          distortionScale={0.2}
+          temporalDistortion={0.1}
         />
-      </RoundedBox>
+      </mesh>
     </Float>
   );
 };
 
 // ─────────────────────────────────────────────
-// BACKGROUND PARTICLES
+// SUBTLE GLOW RING (premium depth)
 // ─────────────────────────────────────────────
-const Particles = () => {
-  const ref = useRef<THREE.Points>(null);
+const GlowRing = () => {
+  const ref = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
-    ref.current.rotation.y = clock.getElapsedTime() * 0.05;
+    ref.current.rotation.z = clock.getElapsedTime() * 0.2;
   });
 
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={200}
-          array={new Float32Array(
-            Array.from({ length: 600 }, () => (Math.random() - 0.5) * 20)
-          )}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial size={0.03} color="#a855f7" />
-    </points>
+    <mesh ref={ref}>
+      <torusGeometry args={[2.4, 0.04, 16, 100]} />
+      <meshBasicMaterial color="#a855f7" />
+    </mesh>
   );
 };
 
 // ─────────────────────────────────────────────
-// MAIN HERO SCENE
+// MAIN COMPONENT (USED IN ABOUT PAGE)
 // ─────────────────────────────────────────────
-export const HeroScene = () => {
+export const AboutFloatingOrb = () => {
   return (
     <div
       style={{
-        position: "absolute",
-        inset: 0,
+        position: "relative",
+        width: "100%",
+        height: "400px",
         zIndex: 0,
-        pointerEvents: "none",
+        pointerEvents: "none", // does not block UI
       }}
     >
-      <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
-        {/* Lights */}
-        <ambientLight intensity={0.3} />
+      <Canvas
+        camera={{ position: [0, 0, 6], fov: 50 }}
+        gl={{ antialias: true, alpha: true }}
+        dpr={[1, 1.5]}
+      >
+        {/* Lighting — soft Apple style */}
+        <ambientLight intensity={0.4} />
         <pointLight position={[5, 5, 5]} intensity={1.5} color="#d946ef" />
         <pointLight position={[-5, -5, -5]} intensity={1} color="#7c3aed" />
 
-        {/* 3D HOLDER */}
-        <ImageHolder />
+        {/* Main Orb */}
+        <GlassOrb />
 
-        {/* Background */}
-        <Particles />
-        <Stars radius={80} depth={40} count={600} factor={3} fade speed={0.5} />
+        {/* Glow ring */}
+        <GlowRing />
       </Canvas>
     </div>
   );
