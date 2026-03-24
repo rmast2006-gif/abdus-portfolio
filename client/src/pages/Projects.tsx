@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { LayoutGrid, Box } from "lucide-react";
 import { SectionHeader } from "../components/ui/SectionHeader.tsx";
 import { ProjectCard } from "../components/ui/ProjectCard.tsx";
@@ -34,10 +33,7 @@ export const Projects = () => {
             ))}
           </div>
         ) : (
-          <ProjectsScene
-            projects={projects}
-            onProjectClick={() => {}}
-          />
+          <ProjectsScene projects={projects} />
         )}
       </div>
     </section>
