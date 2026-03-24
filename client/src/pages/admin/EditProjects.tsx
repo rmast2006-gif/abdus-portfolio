@@ -9,17 +9,19 @@ import {
   Trash2,
   ExternalLink,
   Github,
-  Star,
   Edit2,
   X,
 } from "lucide-react";
+
 import {
   apiGetProjects,
   apiUpdateProject,
   apiDeleteProject,
   apiCreateProject,
 } from "../../utils/api.ts";
+
 import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
+import ImageUpload from "../../components/admin/ImageUpload.tsx";
 
 const EditProjects = () => {
   const navigate = useNavigate();
@@ -58,7 +60,11 @@ const EditProjects = () => {
   // ✅ OPEN MODAL
   const handleOpenModal = (project: any = null) => {
     if (project) {
-      setEditingProject({ ...project });
+      setEditingProject({
+        ...project,
+        languages: "",
+        stack: "",
+      });
     } else {
       setEditingProject({
         title: "",
@@ -66,8 +72,8 @@ const EditProjects = () => {
         image: "",
         githubLink: "",
         liveLink: "",
-        tags: "",
-        featured: false,
+        languages: "",
+        stack: "",
       });
     }
     setIsModalOpen(true);
@@ -78,19 +84,36 @@ const EditProjects = () => {
     setEditingProject(null);
   };
 
-  // ✅ SAVE PROJECT (FIXED)
+  // ✅ FULL SAVE FUNCTION
   const handleSaveProject = async () => {
-    console.log("🔥 SAVE CLICKED", editingProject);
-
     setSaving(true);
+
     try {
       const payload = {
-        ...editingProject,
-        tags:
-          typeof editingProject.tags === "string"
-            ? editingProject.tags.split(",").map((t: string) => t.trim())
-            : editingProject.tags || [],
+        title: editingProject.title || "",
+        description: editingProject.description || "",
+        image: editingProject.image || "",
+        githubLink: editingProject.githubLink || "",
+        liveLink: editingProject.liveLink || "",
+
+        tags: [
+          ...(editingProject.languages
+            ? editingProject.languages
+                .split(",")
+                .map((t: string) => t.trim())
+                .filter((t: string) => t !== "")
+            : []),
+
+          ...(editingProject.stack
+            ? editingProject.stack
+                .split(",")
+                .map((t: string) => t.trim())
+                .filter((t: string) => t !== "")
+            : []),
+        ],
       };
+
+      console.log("🚀 Sending:", payload);
 
       if (editingProject._id) {
         await apiUpdateProject(editingProject._id, payload);
@@ -101,8 +124,8 @@ const EditProjects = () => {
       }
 
       handleCloseModal();
-    } catch (err) {
-      console.error("❌ Save error:", err);
+    } catch (error) {
+      console.error("❌ Save error:", error);
       alert("Failed to save project");
     } finally {
       setSaving(false);
@@ -132,11 +155,12 @@ const EditProjects = () => {
   return (
     <div className="min-h-screen bg-slate-950 pt-32 px-6">
       <div className="max-w-6xl mx-auto">
+
         {/* HEADER */}
         <div className="flex justify-between items-center mb-10">
           <div className="flex items-center gap-4">
             <Link to="/admin/dashboard">
-              <ArrowLeft />
+              <ArrowLeft className="text-white" />
             </Link>
             <h1 className="text-3xl text-white font-bold">
               Manage Projects
@@ -164,11 +188,25 @@ const EditProjects = () => {
 
               <div className="flex justify-between mt-4">
                 <button onClick={() => handleOpenModal(p)}>
-                  <Edit2 />
+                  <Edit2 className="text-white" />
                 </button>
+
                 <button onClick={() => handleDeleteProject(p._id)}>
-                  <Trash2 />
+                  <Trash2 className="text-red-400" />
                 </button>
+              </div>
+
+              <div className="flex gap-3 mt-3">
+                {p.githubLink && (
+                  <a href={p.githubLink} target="_blank">
+                    <Github />
+                  </a>
+                )}
+                {p.liveLink && (
+                  <a href={p.liveLink} target="_blank">
+                    <ExternalLink />
+                  </a>
+                )}
               </div>
             </div>
           ))}
@@ -178,22 +216,20 @@ const EditProjects = () => {
       {/* MODAL */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <motion.div className="bg-slate-900 p-6 rounded-xl w-full max-w-lg">
-              
+
               <h2 className="text-white text-xl mb-4">
                 {editingProject?._id ? "Edit Project" : "Add Project"}
               </h2>
 
-              {/* INPUTS */}
+              {/* FORM */}
+
               <input
                 placeholder="Title"
                 value={editingProject.title}
                 onChange={(e) =>
-                  setEditingProject({
-                    ...editingProject,
-                    title: e.target.value,
-                  })
+                  setEditingProject({ ...editingProject, title: e.target.value })
                 }
                 className="w-full mb-3 p-2 rounded bg-white/10 text-white"
               />
@@ -210,25 +246,56 @@ const EditProjects = () => {
                 className="w-full mb-3 p-2 rounded bg-white/10 text-white"
               />
 
-              <input
-                placeholder="Image URL"
+              <ImageUpload
                 value={editingProject.image}
+                onChange={(url: string) =>
+                  setEditingProject({ ...editingProject, image: url })
+                }
+              />
+
+              <input
+                placeholder="GitHub Link"
+                value={editingProject.githubLink}
                 onChange={(e) =>
                   setEditingProject({
                     ...editingProject,
-                    image: e.target.value,
+                    githubLink: e.target.value,
                   })
                 }
                 className="w-full mb-3 p-2 rounded bg-white/10 text-white"
               />
 
               <input
-                placeholder="Tags (comma separated)"
-                value={editingProject.tags}
+                placeholder="Live Link"
+                value={editingProject.liveLink}
                 onChange={(e) =>
                   setEditingProject({
                     ...editingProject,
-                    tags: e.target.value,
+                    liveLink: e.target.value,
+                  })
+                }
+                className="w-full mb-3 p-2 rounded bg-white/10 text-white"
+              />
+
+              <input
+                placeholder="Languages (comma separated)"
+                value={editingProject.languages}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    languages: e.target.value,
+                  })
+                }
+                className="w-full mb-3 p-2 rounded bg-white/10 text-white"
+              />
+
+              <input
+                placeholder="Tech Stack (comma separated)"
+                value={editingProject.stack}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    stack: e.target.value,
                   })
                 }
                 className="w-full mb-4 p-2 rounded bg-white/10 text-white"
@@ -237,11 +304,11 @@ const EditProjects = () => {
               {/* ACTIONS */}
               <div className="flex justify-end gap-3">
                 <button onClick={handleCloseModal}>
-                  <X />
+                  <X className="text-white" />
                 </button>
 
                 <button
-                  onClick={handleSaveProject} // 🔥 FIXED
+                  onClick={handleSaveProject}
                   disabled={saving}
                   className="bg-fuchsia-600 px-4 py-2 rounded text-white flex gap-2"
                 >
