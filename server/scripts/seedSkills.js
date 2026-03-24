@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -27,11 +36,11 @@ const skills = [
     { name: "ESLint", level: 80, category: "Other", color: "#4B32C3", order: 14 },
     { name: "Postman", level: 85, category: "Other", color: "#FF6C37", order: 15 },
 ];
-const seedSkills = async () => {
+const seedSkills = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        await (0, db_1.connectDB)();
+        yield (0, db_1.connectDB)();
         for (const item of skills) {
-            await Skill_1.default.findOneAndUpdate({ name: item.name }, item, { upsert: true, new: true });
+            yield Skill_1.default.findOneAndUpdate({ name: item.name }, item, { upsert: true, new: true });
             console.log(`Seeded Skill: ${item.name}`);
         }
         console.log("Skills seeded successfully");
@@ -41,5 +50,5 @@ const seedSkills = async () => {
         console.error("Error seeding skills:", error);
         process.exit(1);
     }
-};
+});
 seedSkills();

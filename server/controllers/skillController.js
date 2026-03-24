@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,13 +32,13 @@ const FALLBACK_SKILLS = [
     { name: "ESLint", level: 80, category: "Other", color: "#4B32C3", order: 14 },
     { name: "Postman", level: 85, category: "Other", color: "#FF6C37", order: 15 },
 ];
-const getSkills = async (req, res) => {
+const getSkills = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         console.warn("⚠️ Database not connected. Returning fallback skills.");
         return res.json(FALLBACK_SKILLS);
     }
     try {
-        const skills = await Skill_1.default.find().sort({ order: 1 });
+        const skills = yield Skill_1.default.find().sort({ order: 1 });
         if (!skills || skills.length === 0) {
             return res.json(FALLBACK_SKILLS);
         }
@@ -39,28 +48,28 @@ const getSkills = async (req, res) => {
         console.error("❌ Error fetching skills:", error);
         res.json(FALLBACK_SKILLS);
     }
-};
+});
 exports.getSkills = getSkills;
-const createSkill = async (req, res) => {
+const createSkill = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ error: "Database not connected. Updates are disabled in offline mode." });
     }
     const { name, level, category, color, order } = req.body;
     try {
-        const skill = await Skill_1.default.create({ name, level, category, color, order });
+        const skill = yield Skill_1.default.create({ name, level, category, color, order });
         res.status(201).json(skill);
     }
     catch (error) {
         res.status(400).json({ error: "Invalid skill data" });
     }
-};
+});
 exports.createSkill = createSkill;
-const updateSkill = async (req, res) => {
+const updateSkill = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ error: "Database not connected. Updates are disabled in offline mode." });
     }
     try {
-        const skill = await Skill_1.default.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const skill = yield Skill_1.default.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!skill)
             return res.status(404).json({ error: "Skill not found" });
         res.json(skill);
@@ -68,14 +77,14 @@ const updateSkill = async (req, res) => {
     catch (error) {
         res.status(400).json({ error: "Invalid skill data" });
     }
-};
+});
 exports.updateSkill = updateSkill;
-const deleteSkill = async (req, res) => {
+const deleteSkill = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ error: "Database not connected. Updates are disabled in offline mode." });
     }
     try {
-        const skill = await Skill_1.default.findByIdAndDelete(req.params.id);
+        const skill = yield Skill_1.default.findByIdAndDelete(req.params.id);
         if (!skill)
             return res.status(404).json({ error: "Skill not found" });
         res.json({ message: "Skill removed", id: req.params.id });
@@ -83,5 +92,5 @@ const deleteSkill = async (req, res) => {
     catch (error) {
         res.status(500).json({ error: "Server error" });
     }
-};
+});
 exports.deleteSkill = deleteSkill;

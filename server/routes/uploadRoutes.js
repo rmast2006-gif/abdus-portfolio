@@ -11,10 +11,6 @@ router.post("/", authMiddleware_1.protect, uploadMiddleware_1.upload.single("ima
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
     }
-    // ✅ FIX: send FULL URL
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
-    res.json({
-        url: `${baseUrl}/uploads/${req.file.filename}`,
-    });
+    res.json({ url: `/uploads/${req.file.filename}` });
 });
 exports.default = router;

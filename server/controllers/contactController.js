@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteContact = exports.getContacts = exports.postContact = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Contact_1 = __importDefault(require("../models/Contact"));
-const postContact = async (req, res) => {
+const postContact = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ message: "Database not connected. Cannot send message." });
     }
@@ -15,33 +24,33 @@ const postContact = async (req, res) => {
         if (!name || !email || !message) {
             return res.status(400).json({ message: "All fields are required" });
         }
-        const contact = await Contact_1.default.create({ name, email, message });
+        const contact = yield Contact_1.default.create({ name, email, message });
         res.status(201).json(contact);
     }
     catch (error) {
         res.status(500).json({ message: "Server Error" });
     }
-};
+});
 exports.postContact = postContact;
-const getContacts = async (req, res) => {
+const getContacts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ message: "Database not connected. Cannot fetch messages." });
     }
     try {
-        const contacts = await Contact_1.default.find().sort({ createdAt: -1 });
+        const contacts = yield Contact_1.default.find().sort({ createdAt: -1 });
         res.json(contacts);
     }
     catch (error) {
         res.status(500).json({ message: "Server Error" });
     }
-};
+});
 exports.getContacts = getContacts;
-const deleteContact = async (req, res) => {
+const deleteContact = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (mongoose_1.default.connection.readyState !== 1) {
         return res.status(503).json({ message: "Database not connected. Cannot delete message." });
     }
     try {
-        const contact = await Contact_1.default.findByIdAndDelete(req.params.id);
+        const contact = yield Contact_1.default.findByIdAndDelete(req.params.id);
         if (!contact)
             return res.status(404).json({ message: "Message not found" });
         res.json({ message: "Message removed" });
@@ -49,5 +58,5 @@ const deleteContact = async (req, res) => {
     catch (error) {
         res.status(500).json({ message: "Server Error" });
     }
-};
+});
 exports.deleteContact = deleteContact;
