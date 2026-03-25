@@ -15,12 +15,30 @@ export const Projects = () => {
 
         <SectionHeader title="Projects" subtitle="My work" />
 
+        {/* 🔥 BUTTONS WITH TEXT */}
         <div className="flex gap-4 mb-10">
-          <button onClick={() => setViewMode("grid")}>
-            <LayoutGrid />
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`flex items-center gap-2 px-4 py-2 rounded ${
+              viewMode === "grid"
+                ? "bg-fuchsia-600 text-white"
+                : "bg-white/10 text-white"
+            }`}
+          >
+            <LayoutGrid size={16} />
+            Grid View
           </button>
-          <button onClick={() => setViewMode("3d")}>
-            <Box />
+
+          <button
+            onClick={() => setViewMode("3d")}
+            className={`flex items-center gap-2 px-4 py-2 rounded ${
+              viewMode === "3d"
+                ? "bg-fuchsia-600 text-white"
+                : "bg-white/10 text-white"
+            }`}
+          >
+            <Box size={16} />
+            3D View
           </button>
         </div>
 
