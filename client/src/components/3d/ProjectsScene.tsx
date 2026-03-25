@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text, Float, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { Project } from "../../types.ts";
 
-// 🔥 Single 3D Card
+// 🔥 3D Card
 const ProjectCard3D = ({
   project,
   position,
@@ -15,7 +15,6 @@ const ProjectCard3D = ({
   const ref = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Smooth rotation
   useFrame((_, delta) => {
     if (!ref.current) return;
     ref.current.rotation.y += delta * 0.25;
@@ -27,7 +26,6 @@ const ProjectCard3D = ({
         ref={ref}
         position={position}
         onClick={() => {
-          // 🔥 Open project
           if (project.liveLink) {
             window.open(project.liveLink, "_blank");
           } else if (project.githubLink) {
@@ -37,7 +35,6 @@ const ProjectCard3D = ({
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        {/* Card */}
         <RoundedBox args={[3, 2, 0.15]} radius={0.2}>
           <meshStandardMaterial
             color={hovered ? "#9333ea" : "#1e1b4b"}
@@ -46,7 +43,6 @@ const ProjectCard3D = ({
           />
         </RoundedBox>
 
-        {/* Title */}
         <Text
           position={[0, 0, 0.2]}
           fontSize={0.25}
@@ -61,12 +57,28 @@ const ProjectCard3D = ({
   );
 };
 
-// 🔥 Main Scene
-const ProjectsScene = ({
-  projects,
-}: {
-  projects: Project[];
-}) => {
+// 🔥 MAIN SCENE
+const ProjectsScene = ({ projects }: { projects: Project[] }) => {
+  const [ready, setReady] = useState(false);
+
+  // ✅ CRITICAL FIX: wait for layout + force resize
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setReady(true);
+      window.dispatchEvent(new Event("resize")); // 🔥 FORCE CANVAS FIX
+    }, 50);
+
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!ready) {
+    return (
+      <div className="h-[600px] flex items-center justify-center text-white">
+        Loading 3D...
+      </div>
+    );
+  }
+
   const safeProjects = Array.isArray(projects) ? projects : [];
   const radius = 6;
 
@@ -75,13 +87,11 @@ const ProjectsScene = ({
       <Canvas
         camera={{ position: [0, 2, 10], fov: 55 }}
         dpr={[1, 1.5]}
-        gl={{ antialias: false }} // performance boost
+        gl={{ antialias: false }}
       >
-        {/* Lights */}
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 5, 5]} intensity={1} />
 
-        {/* Circular 3D Layout */}
         {safeProjects.map((project, i) => {
           const angle = (i / safeProjects.length) * Math.PI * 2;
 
