@@ -51,21 +51,28 @@ export const Projects = () => {
           </button>
         </div>
 
-        {/* 🔥 CONTENT */}
         {loading ? (
           <p className="text-white">Loading...</p>
-        ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((p: any) => (
-              <ProjectCard
-                key={p._id}
-                project={p}
-                onClick={() => handleProjectClick(p)} // ✅ FIXED
-              />
-            ))}
-          </div>
         ) : (
-          <ProjectsScene projects={projects} />
+          <>
+            {/* ✅ GRID VIEW */}
+            <div className={viewMode === "grid" ? "block" : "hidden"}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projects.map((p: any) => (
+                  <ProjectCard
+                    key={p._id}
+                    project={p}
+                    onClick={() => handleProjectClick(p)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* ✅ 3D VIEW (PRELOADED — NO DELAY) */}
+            <div className={viewMode === "3d" ? "block" : "hidden"}>
+              <ProjectsScene projects={projects} />
+            </div>
+          </>
         )}
       </div>
     </section>
