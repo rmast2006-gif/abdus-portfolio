@@ -20,7 +20,19 @@ const app = express();
 // ✅ connect DB
 connectDB();
 
-app.use(cors());
+// ✅ FIXED CORS (production ready)
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://abdus-portfolio.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
+
+// ✅ IMPORTANT for preflight (Railway fix)
+app.options("*", cors());
+
 app.use(express.json());
 
 app.get("/api/test", (req, res) => {
@@ -35,7 +47,7 @@ app.use("/api/content", contentRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// ✅ STATIC
+// ✅ STATIC (serving images)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
