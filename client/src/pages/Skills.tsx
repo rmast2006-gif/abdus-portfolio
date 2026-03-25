@@ -10,7 +10,6 @@ export const Skills = () => {
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 FETCH SKILLS
   useEffect(() => {
     const fetchSkills = async () => {
       try {
@@ -31,41 +30,38 @@ export const Skills = () => {
     {
       title: "Architecture",
       text: "Designing scalable and maintainable system architectures using modern patterns and best practices.",
-      hoverColor: "hover:bg-fuchsia-600/10",
-      shadowColor: "hover:shadow-fuchsia-500/5",
-      glowColor: "from-fuchsia-600 to-purple-600",
+      hoverColor: "hover:bg-green-600/10",
+      shadowColor: "hover:shadow-green-500/5",
+      glowColor: "from-green-600 to-green-700",
     },
     {
       title: "3D Interaction",
       text: "Creating immersive 3D environments using Three.js and React Three Fiber.",
-      hoverColor: "hover:bg-purple-600/10",
-      shadowColor: "hover:shadow-purple-500/5",
-      glowColor: "from-purple-600 to-indigo-600",
+      hoverColor: "hover:bg-green-700/10",
+      shadowColor: "hover:shadow-green-500/5",
+      glowColor: "from-green-700 to-green-800",
     },
     {
       title: "Full-Stack",
       text: "Building robust backends and seamless frontends with modern tech stacks.",
-      hoverColor: "hover:bg-emerald-600/10",
-      shadowColor: "hover:shadow-emerald-500/5",
-      glowColor: "from-emerald-600 to-teal-600",
+      hoverColor: "hover:bg-green-500/10",
+      shadowColor: "hover:shadow-green-500/5",
+      glowColor: "from-green-500 to-green-600",
     },
   ];
 
   return (
     <PageTransition>
-      <section className="pt-32 pb-20 bg-slate-950 min-h-screen">
+      <section className="pt-32 pb-20 bg-[#021a12] min-h-screen">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
 
-          {/* HEADER */}
           <SectionHeader
             title="My Skills"
             subtitle="Technologies I use to build modern applications"
           />
 
-          {/* MAIN GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
 
-            {/* LEFT SIDE */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -81,7 +77,6 @@ export const Skills = () => {
                 full-stack applications with performance and UX in mind.
               </p>
 
-              {/* SKILLS BY CATEGORY */}
               <div className="space-y-12">
                 {categories.map((category, index) => {
                   const categorySkills = skills.filter(
@@ -98,19 +93,17 @@ export const Skills = () => {
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
-                      {/* CATEGORY TITLE */}
                       <h4 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
                         <motion.span
                           whileHover={{ scale: 1.1 }}
                           transition={{ type: "spring", stiffness: 400 }}
-                          className="w-8 h-8 bg-gradient-to-br from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center text-xs font-mono shadow-lg"
+                          className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center text-xs font-mono shadow-lg"
                         >
                           0{index + 1}
                         </motion.span>
                         {category}
                       </h4>
 
-                      {/* SKILL BARS */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-2">
                         {categorySkills.map((skill) => (
                           <SkillBar
@@ -126,7 +119,6 @@ export const Skills = () => {
               </div>
             </motion.div>
 
-            {/* RIGHT SIDE - 3D ORB */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -134,13 +126,12 @@ export const Skills = () => {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="absolute -inset-10 bg-fuchsia-600/10 rounded-full blur-3xl" />
+              <div className="absolute -inset-10 bg-green-600/10 rounded-full blur-3xl" />
 
               <h4 className="text-white text-lg mb-4 text-center">
                 Interactive Skills Visualization
               </h4>
 
-              {/* 🔥 LAZY LOAD FIX */}
               <Suspense
                 fallback={
                   <div className="h-[500px] flex items-center justify-center text-slate-400">
@@ -153,7 +144,6 @@ export const Skills = () => {
             </motion.div>
           </div>
 
-          {/* FEATURE CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featureCards.map((card, index) => (
               <motion.div
@@ -172,7 +162,6 @@ export const Skills = () => {
                 }}
                 className={`relative p-8 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 text-center group ${card.hoverColor} hover:border-white/10 hover:shadow-xl ${card.shadowColor} transition-colors overflow-hidden`}
               >
-                {/* TOP GLOW LINE */}
                 <div
                   className={`absolute top-0 left-8 right-8 h-px bg-gradient-to-r ${card.glowColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                 />

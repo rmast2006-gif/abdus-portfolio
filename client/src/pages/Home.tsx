@@ -69,10 +69,16 @@ export const Home = () => {
     <PageTransition>
 
       {/* MAIN SECTION */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-slate-950">
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#021a12]">
 
-        {/* BACKGROUND GLOW */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-fuchsia-600/20 blur-[140px] rounded-full pointer-events-none" />
+        {/* 🔥 MULTI-LAYER PREMIUM BACKGROUND SYSTEM */}
+        <div className="absolute inset-0 pointer-events-none">
+
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/20 blur-[140px] rounded-full" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/15 blur-[120px] rounded-full" />
+          <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-green-600/10 blur-[120px] rounded-full" />
+
+        </div>
 
         {/* GRID CONTAINER */}
         <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
@@ -88,7 +94,7 @@ export const Home = () => {
                 animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -40 }}
                 transition={{ duration: 0.6 }}
               >
-                <span className="inline-block px-4 py-1.5 bg-fuchsia-600/10 text-fuchsia-400 text-sm font-bold rounded-full border border-fuchsia-500/20 mb-6 tracking-widest uppercase">
+                <span className="inline-block px-5 py-2 bg-green-600/10 text-green-400 text-sm font-bold rounded-full border border-green-500/20 mb-6 tracking-widest uppercase shadow-lg shadow-green-500/10 backdrop-blur-md">
                   Creative Developer & 3D Expert
                 </span>
               </motion.div>
@@ -99,8 +105,18 @@ export const Home = () => {
                 animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -60 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-[1.1] tracking-tight">
-                  I'm <span className="text-gradient">{hero.heading}</span> <br />
+                <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-[1.05] tracking-tight">
+
+                  {/* 🔥 TEXT GLOW LAYER */}
+                  <span className="absolute blur-2xl opacity-20 text-green-400">
+                    {hero.heading}
+                  </span>
+
+                  <span className="relative">
+                    I'm <span className="text-gradient">{hero.heading}</span>
+                  </span>
+
+                  <br />
                   {hero.subheading}
                 </h1>
               </motion.div>
@@ -122,20 +138,29 @@ export const Home = () => {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="flex flex-col sm:flex-row gap-6"
               >
+
+                {/* PRIMARY BUTTON */}
                 <Link
                   to="/projects"
-                  className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white text-lg font-bold rounded-full hover:scale-105"
+                  className="group relative flex items-center justify-center gap-3 px-8 py-4 btn-premium rounded-full text-lg font-bold overflow-hidden"
                 >
-                  {hero.cta_primary}
-                  <ArrowRight size={20} />
+                  <span className="relative z-10 flex items-center gap-3">
+                    {hero.cta_primary}
+                    <ArrowRight size={20} />
+                  </span>
+
+                  {/* 🔥 SHINE EFFECT */}
+                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 </Link>
 
+                {/* SECONDARY BUTTON */}
                 <Link
                   to="/contact"
-                  className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white text-lg font-bold rounded-full border border-white/5 hover:scale-105"
+                  className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900/80 backdrop-blur-xl text-white text-lg font-bold rounded-full border border-green-500/10 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all overflow-hidden"
                 >
                   {hero.cta_secondary}
                 </Link>
+
               </motion.div>
 
               {/* STATS */}
@@ -146,19 +171,25 @@ export const Home = () => {
                 className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8"
               >
                 {[Zap, Rocket, Code2].map((Icon, i) => (
-                  <div key={i} className="flex items-center gap-4 group">
-                    <div className="p-3 bg-slate-900/80 rounded-2xl border border-white/5">
-                      <Icon size={24} />
+                  <motion.div
+                    key={i}
+                    whileHover={{ y: -6, scale: 1.03 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="flex items-center gap-4 group p-4 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 hover:border-green-500/20 transition-all"
+                  >
+                    <div className="p-3 bg-slate-900/80 rounded-2xl border border-green-500/10 group-hover:border-green-500/30 transition-all shadow-inner shadow-green-500/5">
+                      <Icon size={24} className="text-green-400" />
                     </div>
+
                     <div>
-                      <h4 className="text-white font-bold">
+                      <h4 className="text-white font-bold text-lg">
                         {stats[`stat${i + 1}_value`]}
                       </h4>
                       <p className="text-slate-500 text-sm">
                         {stats[`stat${i + 1}_label`]}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </motion.div>
 
@@ -166,6 +197,9 @@ export const Home = () => {
 
             {/* RIGHT SIDE — 3D IMAGE HOLDER */}
             <div className="relative w-full h-[550px] flex items-center justify-center">
+
+              {/* EXTRA GLOW BEHIND 3D */}
+              <div className="absolute w-[400px] h-[400px] bg-green-500/20 blur-[120px] rounded-full" />
 
               {/* WRAPPER FOR ALIGNMENT */}
               <div className="w-full h-full max-w-[500px] flex items-center justify-center">

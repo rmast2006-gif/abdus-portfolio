@@ -34,7 +34,7 @@ const AppContent = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // ✅ FIX: Force reflow after route change (prevents blue screen / delayed render)
+  // ✅ FIX: Force reflow after route change
   useEffect(() => {
     const timeout = setTimeout(() => {
       window.dispatchEvent(new Event("resize"));
@@ -66,29 +66,68 @@ const AppContent = () => {
   }, [isAdminPage]);
 
   return (
-    <div className="bg-slate-950 min-h-screen w-full overflow-x-hidden text-slate-200 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
-      {!isAdminPage && <Cursor />}
-      {!isAdminPage && <Navbar />}
-      
-      {/* Scroll Progress Bar */}
+    <div className="relative bg-[#021a12] min-h-screen w-full overflow-x-hidden text-slate-200 selection:bg-green-500/30 selection:text-green-200">
+
+      {/* 🔥 GLOBAL BACKGROUND GLOW SYSTEM */}
       {!isAdminPage && (
-        <motion.div
-          className="fixed top-0 left-0 h-1 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 z-[6000] origin-left"
-          style={{ scaleX: scrollProgress }}
-        />
+        <>
+          <div className="fixed inset-0 -z-10 pointer-events-none">
+
+            {/* MAIN RADIAL LIGHT */}
+            <div className="absolute top-[-200px] left-[10%] w-[600px] h-[600px] bg-green-500/10 blur-[160px] rounded-full" />
+
+            {/* SECONDARY LIGHT */}
+            <div className="absolute bottom-[-200px] right-[10%] w-[500px] h-[500px] bg-emerald-400/10 blur-[140px] rounded-full" />
+
+            {/* CENTER GLOW */}
+            <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-green-600/5 blur-[120px] rounded-full" />
+
+          </div>
+        </>
       )}
 
-      {/* ✅ FIX: wrapper to stabilize layout + prevent shifting */}
+      {!isAdminPage && <Cursor />}
+      {!isAdminPage && <Navbar />}
+
+      {/* 🔥 PREMIUM SCROLL PROGRESS BAR */}
+      {!isAdminPage && (
+        <>
+          <motion.div
+            className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 z-[6000] origin-left shadow-[0_0_20px_rgba(34,197,94,0.6)]"
+            style={{ scaleX: scrollProgress }}
+          />
+
+          {/* GLOW LINE UNDER */}
+          <motion.div
+            className="fixed top-0 left-0 h-[6px] bg-green-500/20 blur-md z-[5999] origin-left"
+            style={{ scaleX: scrollProgress }}
+          />
+        </>
+      )}
+
+      {/* MAIN CONTENT WRAPPER */}
       <div className="w-full min-h-screen relative">
+
         <AnimatePresence mode="wait" initial={false}>
           <Suspense
             fallback={
-              <div className="h-screen w-full flex items-center justify-center bg-slate-950">
-                <div className="w-12 h-12 border-4 border-fuchsia-500/20 border-t-fuchsia-500 rounded-full animate-spin" />
+              <div className="h-screen w-full flex items-center justify-center bg-[#021a12]">
+
+                {/* 🔥 PREMIUM LOADER */}
+                <div className="relative flex items-center justify-center">
+
+                  <div className="w-16 h-16 border-4 border-green-500/20 border-t-green-500 rounded-full animate-spin" />
+
+                  {/* GLOW RING */}
+                  <div className="absolute w-16 h-16 rounded-full bg-green-500/20 blur-xl" />
+
+                </div>
+
               </div>
             }
           >
             <Routes location={location} key={location.pathname}>
+
               <Route
                 path="/"
                 element={
@@ -97,6 +136,7 @@ const AppContent = () => {
                   </PageTransition>
                 }
               />
+
               <Route
                 path="/about"
                 element={
@@ -105,6 +145,7 @@ const AppContent = () => {
                   </PageTransition>
                 }
               />
+
               <Route
                 path="/projects"
                 element={
@@ -113,6 +154,7 @@ const AppContent = () => {
                   </PageTransition>
                 }
               />
+
               <Route
                 path="/skills"
                 element={
@@ -121,6 +163,7 @@ const AppContent = () => {
                   </PageTransition>
                 }
               />
+
               <Route
                 path="/contact"
                 element={
@@ -132,7 +175,9 @@ const AppContent = () => {
 
               {/* Admin Routes */}
               <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+
               <Route path="/admin/login" element={<AdminLogin />} />
+
               <Route
                 path="/admin/dashboard"
                 element={
@@ -141,6 +186,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/home"
                 element={
@@ -149,6 +195,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/about"
                 element={
@@ -157,6 +204,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/projects"
                 element={
@@ -165,6 +213,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/skills"
                 element={
@@ -173,6 +222,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/contact"
                 element={
@@ -181,6 +231,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/edit/global"
                 element={
@@ -189,6 +240,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/admin/messages"
                 element={
@@ -197,12 +249,14 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+
             </Routes>
           </Suspense>
         </AnimatePresence>
       </div>
 
       {!isAdminPage && <Footer />}
+
     </div>
   );
 };

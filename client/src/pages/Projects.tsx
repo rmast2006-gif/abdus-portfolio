@@ -19,58 +19,74 @@ export const Projects = () => {
   };
 
   return (
-    <section className="pt-32 pb-20 bg-slate-950 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="pt-32 pb-20 bg-[#021a12] min-h-screen relative overflow-hidden">
+
+      {/* ✅ GREEN BACKGROUND GLOW */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-green-600/20 blur-[140px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
 
         <SectionHeader title="Projects" subtitle="My work" />
 
         {/* 🔥 VIEW TOGGLE BUTTONS */}
         <div className="flex gap-4 mb-10">
+
+          {/* GRID BUTTON */}
           <button
             onClick={() => setViewMode("grid")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold ${
               viewMode === "grid"
-                ? "bg-fuchsia-600 text-white"
-                : "bg-white/10 text-white hover:bg-white/20"
+                ? "btn-green glow-green text-white"
+                : "bg-white/5 text-slate-300 hover:bg-green-500/10 border border-green-500/10"
             }`}
           >
-            <LayoutGrid size={16} />
+            <LayoutGrid size={16} className={viewMode === "grid" ? "text-white" : "text-green-400"} />
             Grid View
           </button>
 
+          {/* 3D BUTTON */}
           <button
             onClick={() => setViewMode("3d")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold ${
               viewMode === "3d"
-                ? "bg-fuchsia-600 text-white"
-                : "bg-white/10 text-white hover:bg-white/20"
+                ? "btn-green glow-green text-white"
+                : "bg-white/5 text-slate-300 hover:bg-green-500/10 border border-green-500/10"
             }`}
           >
-            <Box size={16} />
+            <Box size={16} className={viewMode === "3d" ? "text-white" : "text-green-400"} />
             3D View
           </button>
+
         </div>
 
         {loading ? (
-          <p className="text-white">Loading...</p>
+          <p className="text-green-400 animate-pulse">Loading...</p>
         ) : (
           <>
             {/* ✅ GRID VIEW */}
             <div className={viewMode === "grid" ? "block" : "hidden"}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
                 {projects.map((p: any) => (
-                  <ProjectCard
+                  <div
                     key={p._id}
-                    project={p}
-                    onClick={() => handleProjectClick(p)}
-                  />
+                    className="transition-all duration-300 hover:scale-[1.02]"
+                  >
+                    <ProjectCard
+                      project={p}
+                      onClick={() => handleProjectClick(p)}
+                    />
+                  </div>
                 ))}
+
               </div>
             </div>
 
             {/* ✅ 3D VIEW (PRELOADED — NO DELAY) */}
             <div className={viewMode === "3d" ? "block" : "hidden"}>
-              <ProjectsScene projects={projects} />
+              <div className="rounded-3xl border border-green-500/10 bg-[#021a12]/60 backdrop-blur-xl p-4 shadow-lg shadow-green-500/10">
+                <ProjectsScene projects={projects} />
+              </div>
             </div>
           </>
         )}

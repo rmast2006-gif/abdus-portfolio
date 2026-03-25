@@ -19,7 +19,6 @@ export const About = () => {
 
   const avatarY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
-  // ✅ API call — unchanged
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -37,7 +36,6 @@ export const About = () => {
     fetchContent();
   }, []);
 
-  // ✅ Fallbacks
   const bio = {
     name: content.bio?.name || "Abdus Samie Tahir",
     role: content.bio?.role || "Full Stack Developer",
@@ -62,13 +60,12 @@ export const About = () => {
   };
 
   const stats = [
-    { label: "Years Experience", value: "5+", icon: <Award className="text-fuchsia-500" size={32} /> },
-    { label: "Projects Completed", value: "50+", icon: <Code className="text-purple-500" size={32} /> },
-    { label: "Happy Clients", value: "30+", icon: <User className="text-emerald-500" size={32} /> },
-    { label: "Countries Served", value: "10+", icon: <Globe className="text-amber-500" size={32} /> },
+    { label: "Years Experience", value: "5+", icon: <Award className="text-green-400" size={32} /> },
+    { label: "Projects Completed", value: "50+", icon: <Code className="text-green-500" size={32} /> },
+    { label: "Happy Clients", value: "30+", icon: <User className="text-green-300" size={32} /> },
+    { label: "Countries Served", value: "10+", icon: <Globe className="text-green-600" size={32} /> },
   ];
 
-  // 🎯 Tilt effect
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!avatarRef.current) return;
     const rect = avatarRef.current.getBoundingClientRect();
@@ -86,7 +83,7 @@ export const About = () => {
 
   return (
     <PageTransition>
-      <section ref={sectionRef} className="pt-32 pb-20 bg-slate-950 relative overflow-hidden">
+      <section ref={sectionRef} className="pt-32 pb-20 bg-[#021a12] relative overflow-hidden">
 
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
 
@@ -95,10 +92,8 @@ export const About = () => {
             subtitle={`I'm ${bio.name}, a ${bio.role} dedicated to building high-quality digital experiences.`}
           />
 
-          {/* ───── GRID ───── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
 
-            {/* ✅ LEFT: 3D ORB (REPLACED IMAGE) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -107,7 +102,7 @@ export const About = () => {
               style={{ y: avatarY }}
               className="relative group"
             >
-              <div className="absolute -inset-6 bg-fuchsia-600/20 rounded-3xl blur-3xl" />
+              <div className="absolute -inset-6 bg-green-600/20 rounded-3xl blur-3xl" />
 
               <div
                 ref={avatarRef}
@@ -115,16 +110,12 @@ export const About = () => {
                 onMouseLeave={handleMouseLeave}
                 className="relative transition-all duration-500"
               >
-                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-fuchsia-900/30">
-
-                  {/* 🔥 3D IMAGE HOLDER */}
+                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30">
                   <AboutFloatingOrb />
-
                 </div>
               </div>
             </motion.div>
 
-            {/* RIGHT TEXT */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -141,19 +132,19 @@ export const About = () => {
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-slate-900/50 rounded-2xl border border-white/5">
-                  <Palette className="text-fuchsia-500 mb-4" size={32} />
+                  <Palette className="text-green-400 mb-4" size={32} />
                   <h4 className="text-white font-bold">Design Focused</h4>
                 </div>
 
                 <div className="p-6 bg-slate-900/50 rounded-2xl border border-white/5">
-                  <Terminal className="text-purple-500 mb-4" size={32} />
+                  <Terminal className="text-green-500 mb-4" size={32} />
                   <h4 className="text-white font-bold">Code Quality</h4>
                 </div>
               </div>
             </motion.div>
+
           </div>
 
-          {/* ───── STATS ───── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="p-8 bg-slate-900/30 rounded-3xl text-center">

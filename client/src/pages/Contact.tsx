@@ -37,8 +37,8 @@ const ParticleDots = () => {
         <mesh key={i} position={p.position}>
           <sphereGeometry args={[p.size, 6, 6]} />
           <meshStandardMaterial
-            color="#9333ea"
-            emissive="#6d28d9"
+            color="#22c55e"               // ✅ GREEN
+            emissive="#16a34a"            // ✅ GREEN GLOW
             emissiveIntensity={0.6}
             transparent
             opacity={0.4}
@@ -104,12 +104,12 @@ export const Contact = () => {
 
   return (
     <PageTransition>
-      <section className="pt-32 pb-20 bg-slate-950 min-h-screen relative overflow-hidden">
+      <section className="pt-32 pb-20 bg-[#021a12] min-h-screen relative overflow-hidden">
         <ContactParticles />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-          {/* ✅ UPDATED HEADER WITH ACTIVE STATUS */}
+          {/* HEADER */}
           <div className="text-center mb-16">
 
             <SectionHeader
@@ -117,19 +117,18 @@ export const Contact = () => {
               subtitle=""
             />
 
+            {/* ✅ ACTIVE STATUS */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="flex items-center justify-center gap-3 mt-4"
             >
-              {/* Animated Green Dot */}
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
               </span>
 
-              {/* Text */}
               <p className="text-green-400 font-medium">
                 Open to freelance work and all opportunities
               </p>
@@ -152,7 +151,7 @@ export const Contact = () => {
                     whileHover={{ x: 5 }}
                     className="flex gap-4 p-5 bg-slate-900/60 rounded-xl border border-white/10"
                   >
-                    <div className="text-fuchsia-400">{item.icon}</div>
+                    <div className="text-green-400">{item.icon}</div> {/* ✅ FIX */}
                     <div>
                       <p className="text-white font-semibold">{item.label}</p>
                       <p className="text-slate-400">{item.value}</p>
@@ -185,7 +184,7 @@ export const Contact = () => {
                       placeholder="Your Name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
+                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-green-500"
                     />
 
                     <input
@@ -193,7 +192,7 @@ export const Contact = () => {
                       placeholder="Your Email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
+                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-green-500"
                     />
 
                     <textarea
@@ -201,7 +200,7 @@ export const Contact = () => {
                       placeholder="Your Message..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
+                      className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-green-500"
                     />
 
                     {status === "error" && (
@@ -210,11 +209,12 @@ export const Contact = () => {
                       </div>
                     )}
 
+                    {/* ✅ BUTTON GREEN */}
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       type="submit"
-                      className="w-full py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-xl text-white font-bold flex justify-center gap-2"
+                      className="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-white font-bold flex justify-center gap-2 hover:from-green-500 hover:to-green-600 transition-all shadow-lg shadow-green-500/20"
                     >
                       {status === "loading" ? "Sending..." : "Send Message"}
                       <Send size={18} />

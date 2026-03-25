@@ -56,12 +56,14 @@ export const HeroScene = ({ imageUrl }: Props) => {
       <div
         className="relative flex items-center justify-center"
         style={{
-          perspective: "1200px", // ✅ FIX: required for proper 3D rendering
+          perspective: "1200px",
         }}
       >
 
-        {/* GLOW BACKGROUND */}
-        <div className="absolute w-[420px] h-[420px] bg-fuchsia-600/20 blur-[120px] rounded-full pointer-events-none" />
+        {/* 🔥 PREMIUM MULTI-LAYER GREEN GLOW */}
+        <div className="absolute w-[420px] h-[420px] bg-green-500/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute w-[300px] h-[300px] bg-emerald-400/20 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute w-[500px] h-[500px] bg-green-600/10 blur-[160px] rounded-full pointer-events-none" />
 
         {/* ───────── 3D ROTATING HOLDER ───────── */}
         <motion.div
@@ -74,8 +76,8 @@ export const HeroScene = ({ imageUrl }: Props) => {
             rotateX,
             rotateY,
             transformPerspective: 1200,
-            transformStyle: "preserve-3d", // ✅ FIX: stabilize 3D transforms
-            willChange: "transform", // ✅ FIX: smooth rendering on Vercel
+            transformStyle: "preserve-3d",
+            willChange: "transform",
           }}
 
           // Continuous rotation
@@ -89,11 +91,17 @@ export const HeroScene = ({ imageUrl }: Props) => {
             ease: "linear",
           }}
 
-          className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900"
+          className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-3xl overflow-hidden border border-green-500/20 shadow-2xl bg-slate-900/80 backdrop-blur-xl"
         >
 
-          {/* INNER LIGHT OVERLAY */}
-          <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 z-10 pointer-events-none" />
+          {/* 🔥 INNER PREMIUM OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-emerald-500/10 to-green-600/10 z-10 pointer-events-none" />
+
+          {/* 🔥 EDGE LIGHT EFFECT */}
+          <div className="absolute inset-0 rounded-3xl border border-green-400/20 pointer-events-none" />
+
+          {/* 🔥 SOFT INNER SHADOW */}
+          <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(34,197,94,0.15)] pointer-events-none" />
 
           {/* IMAGE CONTENT */}
           {imageUrl ? (
@@ -101,13 +109,16 @@ export const HeroScene = ({ imageUrl }: Props) => {
               src={imageUrl}
               alt="Hero"
               className="w-full h-full object-cover"
-              draggable={false} // ✅ FIX: prevents weird drag flicker
+              draggable={false}
             />
           ) : (
             <div className="flex items-center justify-center w-full h-full text-slate-500">
               Upload Image from Admin Panel
             </div>
           )}
+
+          {/* 🔥 PREMIUM SHINE EFFECT */}
+          <div className="absolute inset-0 opacity-0 hover:opacity-100 transition duration-700 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
 
         </motion.div>
 
