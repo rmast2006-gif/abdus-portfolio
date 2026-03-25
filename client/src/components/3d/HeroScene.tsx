@@ -50,10 +50,15 @@ export const HeroScene = ({ imageUrl }: Props) => {
   // Render
   // ─────────────────────────────────────────
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full min-h-screen flex items-center justify-center overflow-hidden">
 
       {/* OUTER WRAPPER */}
-      <div className="relative flex items-center justify-center">
+      <div
+        className="relative flex items-center justify-center"
+        style={{
+          perspective: "1200px", // ✅ FIX: required for proper 3D rendering
+        }}
+      >
 
         {/* GLOW BACKGROUND */}
         <div className="absolute w-[420px] h-[420px] bg-fuchsia-600/20 blur-[120px] rounded-full pointer-events-none" />
@@ -69,6 +74,8 @@ export const HeroScene = ({ imageUrl }: Props) => {
             rotateX,
             rotateY,
             transformPerspective: 1200,
+            transformStyle: "preserve-3d", // ✅ FIX: stabilize 3D transforms
+            willChange: "transform", // ✅ FIX: smooth rendering on Vercel
           }}
 
           // Continuous rotation
@@ -86,7 +93,7 @@ export const HeroScene = ({ imageUrl }: Props) => {
         >
 
           {/* INNER LIGHT OVERLAY */}
-          <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 z-10 pointer-events-none" />
 
           {/* IMAGE CONTENT */}
           {imageUrl ? (
@@ -94,6 +101,7 @@ export const HeroScene = ({ imageUrl }: Props) => {
               src={imageUrl}
               alt="Hero"
               className="w-full h-full object-cover"
+              draggable={false} // ✅ FIX: prevents weird drag flicker
             />
           ) : (
             <div className="flex items-center justify-center w-full h-full text-slate-500">

@@ -63,12 +63,19 @@ const ProjectsScene = ({ projects }: { projects: Project[] }) => {
   const radius = 6;
 
   return (
-    <div className="h-[600px] w-full rounded-3xl overflow-hidden border border-white/5">
+    <div className="w-full min-h-[600px] rounded-3xl overflow-hidden border border-white/5 relative">
+
+      {/* ✅ FIX: force proper layout + prevent blue screen */}
       <Canvas
         camera={{ position: [0, 2, 10], fov: 55 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: false }}
+        dpr={[1, 2]} // ✅ smoother rendering
+        gl={{ antialias: true }} // ✅ better visuals
+        frameloop="always" // ✅ FIX: prevents render-on-hover bug
       >
+
+        {/* ✅ FIX: background color (removes blue screen) */}
+        <color attach="background" args={["#020617"]} />
+
         {/* Lighting */}
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 5, 5]} intensity={1} />
@@ -78,7 +85,10 @@ const ProjectsScene = ({ projects }: { projects: Project[] }) => {
 
         {/* Circular layout */}
         {safeProjects.map((project, i) => {
-          const angle = (i / safeProjects.length) * Math.PI * 2;
+          const angle =
+            safeProjects.length > 0
+              ? (i / safeProjects.length) * Math.PI * 2
+              : 0;
 
           return (
             <ProjectCard3D
