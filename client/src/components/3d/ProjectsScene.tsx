@@ -4,23 +4,17 @@ import { Text, Float, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { Project } from "../../types.ts";
 
-const ProjectCard3D = ({
-  project,
-  position,
-}: {
-  project: Project;
-  position: [number, number, number];
-}) => {
+const ProjectCard3D = ({ project, position }: any) => {
   const ref = useRef<THREE.Group>(null);
-  const [hovered, setHovered] = useState(false);
 
   useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.y += delta * 0.3;
+    if (ref.current) {
+      ref.current.rotation.y += delta * 0.3;
+    }
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.4}>
+    <Float>
       <group
         ref={ref}
         position={position}
@@ -31,24 +25,12 @@ const ProjectCard3D = ({
             window.open(project.githubLink, "_blank");
           }
         }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       >
-        <RoundedBox args={[3, 2, 0.15]} radius={0.2}>
-          <meshStandardMaterial
-            color={hovered ? "#9333ea" : "#1e1b4b"}
-            metalness={0.4}
-            roughness={0.3}
-          />
+        <RoundedBox args={[3, 2, 0.15]}>
+          <meshStandardMaterial color="#1e1b4b" />
         </RoundedBox>
 
-        <Text
-          position={[0, 0, 0.2]}
-          fontSize={0.25}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
+        <Text position={[0, 0, 0.2]} fontSize={0.25}>
           {project.title}
         </Text>
       </group>
@@ -56,40 +38,23 @@ const ProjectCard3D = ({
   );
 };
 
-export const ProjectsScene = ({
-  projects,
-}: {
-  projects: Project[];
-}) => {
-  const radius = 6;
-
+const ProjectsScene = ({ projects }: any) => {
   return (
-    <div className="h-[600px] w-full rounded-3xl overflow-hidden border border-white/5">
-      <Canvas
-        camera={{ position: [0, 2, 10], fov: 55 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: false }} // 🔥 performance boost
-      >
-        {/* 🔥 LIGHTS (lighter than Environment) */}
-        <ambientLight intensity={0.6} />
-        <pointLight position={[5, 5, 5]} intensity={1} />
+    <div className="h-[600px] w-full">
+      <Canvas camera={{ position: [0, 2, 10] }}>
+        <ambientLight />
+        <pointLight position={[5, 5, 5]} />
 
-        {projects.map((project, i) => {
-          const angle = (i / projects.length) * Math.PI * 2;
-
-          return (
-            <ProjectCard3D
-              key={project._id}
-              project={project}
-              position={[
-                Math.cos(angle) * radius,
-                0,
-                Math.sin(angle) * radius,
-              ]}
-            />
-          );
-        })}
+        {projects.map((p: any, i: number) => (
+          <ProjectCard3D
+            key={p._id}
+            project={p}
+            position={[i * 4 - 4, 0, 0]}
+          />
+        ))}
       </Canvas>
     </div>
   );
 };
+
+export default ProjectsScene;
