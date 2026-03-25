@@ -30,8 +30,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// ❌ REMOVED app.options (causing crash)
-
 app.use(express.json());
 
 app.get("/api/test", (req, res) => {
@@ -46,8 +44,8 @@ app.use("/api/content", contentRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// ✅ STATIC
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// ✅ FIXED STATIC PATH (IMPORTANT)
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.get("/", (req, res) => {
   res.send("API is running on Railway 🚀");
