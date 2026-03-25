@@ -1,12 +1,80 @@
-import { useState, useEffect } from "react";
-import { motion } from "motion/react";
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, Github } from "lucide-react";
 import { SectionHeader } from "../components/ui/SectionHeader.tsx";
 import { PageTransition } from "../components/ui/PageTransition.tsx";
 import { sendContact, apiGetPageContent } from "../utils/api.ts";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
+// ───────────────────────── PARTICLES ─────────────────────────
+const ParticleDots = () => {
+  const groupRef = useRef<THREE.Group>(null);
+
+  const particles = useState(() =>
+    Array.from({ length: 80 }, () => ({
+      position: [
+        (Math.random() - 0.5) * 24,
+        (Math.random() - 0.5) * 14,
+        (Math.random() - 0.5) * 6,
+      ] as [number, number, number],
+      speed: Math.random() * 0.15 + 0.05,
+      offset: Math.random() * Math.PI * 2,
+      size: Math.random() * 0.04 + 0.02,
+    }))
+  )[0];
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return;
+    groupRef.current.rotation.y = clock.getElapsedTime() * 0.008;
+  });
+
+  return (
+    <group ref={groupRef}>
+      {particles.map((p, i) => (
+        <SingleParticle key={i} {...p} />
+      ))}
+    </group>
+  );
+};
+
+const SingleParticle = ({ position, speed, offset, size }: any) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    meshRef.current.position.y =
+      position[1] + Math.sin(clock.getElapsedTime() * speed + offset) * 0.4;
+  });
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <sphereGeometry args={[size, 6, 6]} />
+      <meshStandardMaterial color="#7c3aed" emissive="#6d28d9" emissiveIntensity={0.8} transparent opacity={0.5} />
+    </mesh>
+  );
+};
+
+const ContactParticles = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none">
+    <Canvas camera={{ position: [0, 0, 10] }}>
+      <ambientLight intensity={0.4} />
+      <pointLight position={[0, 5, 5]} color="#d946ef" />
+      <ParticleDots />
+    </Canvas>
+  </div>
+);
+
+// ───────────────────────── MAIN ─────────────────────────
 export const Contact = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    projectType: "",
+    budget: "",
+  });
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [content, setContent] = useState<any>({});
@@ -21,7 +89,7 @@ export const Contact = () => {
         }, {});
         setContent(contentMap);
       } catch (error) {
-        console.error("Error fetching contact content:", error);
+        console.error(error);
       }
     };
     fetchContent();
@@ -33,134 +101,139 @@ export const Contact = () => {
     try {
       await sendContact(formData);
       setStatus("success");
-      setFormData({ name: "", email: "", message: "" });
-    } catch (err) {
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+        projectType: "",
+        budget: "",
+      });
+    } catch {
       setStatus("error");
-      setErrorMessage("Something went wrong. Please try again later.");
+      setErrorMessage("Something went wrong.");
     }
   };
 
   const contactInfo = [
-    { icon: <Mail size={24} />, label: "Email", value: content.email || "hello@portfolio.com", color: "bg-blue-500/10 text-blue-400" },
-    { icon: <Phone size={24} />, label: "Phone", value: content.phone || "+1 (555) 123-4567", color: "bg-emerald-500/10 text-emerald-400" },
-    { icon: <MapPin size={24} />, label: "Location", value: content.location || "San Francisco, CA", color: "bg-amber-500/10 text-amber-400" },
+    { icon: <Mail />, label: "Email", value: content.email || "hello@portfolio.com" },
+    { icon: <Phone />, label: "Phone", value: content.phone || "+923XXXXXXXXX" },
+    { icon: <MapPin />, label: "Location", value: content.location || "Pakistan" },
   ];
 
   return (
     <PageTransition>
-      <section className="pt-32 pb-20 bg-slate-950 min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <SectionHeader 
-            title={content.title || "Get In Touch"} 
-            subtitle={content.subtitle || "Have a project in mind? Let's discuss how we can build something extraordinary together."}
+      <section className="pt-32 pb-20 bg-slate-950 min-h-screen relative overflow-hidden">
+
+        <ContactParticles />
+
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+
+          <SectionHeader
+            title="Get In Touch"
+            subtitle="Let’s build something amazing together"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <h3 className="text-3xl font-bold text-white mb-8 leading-tight">
-                {content.heading || "Let's start a conversation."}
-              </h3>
-              <p className="text-lg text-slate-400 mb-12 leading-relaxed">
-                {content.description || "I'm always open to new opportunities, collaborations, and interesting projects. Whether you have a specific project in mind or just want to say hello, feel free to reach out."}
-              </p>
+          {/* 🔥 Availability */}
+          <div className="mb-10">
+            <span className="bg-green-500/10 text-green-400 px-4 py-2 rounded-full text-sm">
+              🟢 Available for freelance work
+            </span>
+          </div>
 
-              <div className="space-y-6">
-                {contactInfo.map((info) => (
-                  <div key={info.label} className="flex items-center gap-6 p-6 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 group hover:bg-fuchsia-600/10 transition-all">
-                    <div className={`p-4 rounded-2xl ${info.color} group-hover:scale-110 transition-transform`}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+
+            {/* LEFT */}
+            <div>
+              <div className="space-y-6 mb-8">
+                {contactInfo.map((info, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ y: -4 }}
+                    className="p-6 bg-slate-900 rounded-2xl border border-white/5"
+                  >
+                    <div className="flex gap-4 items-center text-white">
                       {info.icon}
+                      <div>
+                        <p className="font-bold">{info.label}</p>
+                        <p className="text-slate-400">{info.value}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-white font-bold mb-1">{info.label}</h4>
-                      <p className="text-slate-400">{info.value}</p>
-                    </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="p-8 md:p-12 bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl"
-            >
-              {status === "success" ? (
-                <div className="text-center py-12">
-                  <div className="flex justify-center mb-6 text-emerald-500">
-                    <CheckCircle size={64} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Message Sent!</h3>
-                  <p className="text-slate-400 mb-8">Thank you for reaching out. I'll get back to you as soon as possible.</p>
-                  <button
-                    onClick={() => setStatus("idle")}
-                    className="px-8 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-bold rounded-full hover:from-fuchsia-500 hover:to-purple-500 transition-all shadow-lg shadow-fuchsia-500/20"
-                  >
-                    Send Another Message
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-white font-medium mb-2 ml-2">Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-6 py-4 bg-slate-800/50 border border-white/5 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-white font-medium mb-2 ml-2">Email</label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-6 py-4 bg-slate-800/50 border border-white/5 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all"
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-white font-medium mb-2 ml-2">Message</label>
-                    <textarea
-                      required
-                      rows={6}
+              {/* 🔥 Quick Contact */}
+              <div className="flex gap-4">
+                <a href="mailto:your@email.com" className="p-4 bg-white/5 rounded-xl"><Mail /></a>
+                <a href="https://github.com/" className="p-4 bg-white/5 rounded-xl"><Github /></a>
+                <a href="https://wa.me/923XXXXXXXXX" className="p-4 bg-white/5 rounded-xl"><Phone /></a>
+              </div>
+            </div>
+
+            {/* RIGHT FORM */}
+            <div className="p-8 bg-slate-900/60 rounded-3xl border border-white/10">
+
+              <AnimatePresence mode="wait">
+                {status === "success" ? (
+                  <motion.div key="success" className="text-center py-12">
+                    <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                    <h3 className="text-white text-xl">Message Sent!</h3>
+                  </motion.div>
+                ) : (
+                  <motion.form key="form" onSubmit={handleSubmit} className="space-y-6">
+
+                    <input placeholder="Name" value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="input" />
+
+                    <input placeholder="Email" value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="input" />
+
+                    {/* 🔥 NEW */}
+                    <select
+                      value={formData.projectType}
+                      onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
+                      className="input"
+                    >
+                      <option value="">Project Type</option>
+                      <option>Portfolio</option>
+                      <option>E-commerce</option>
+                      <option>3D Website</option>
+                    </select>
+
+                    <select
+                      value={formData.budget}
+                      onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                      className="input"
+                    >
+                      <option value="">Budget</option>
+                      <option>$50-$100</option>
+                      <option>$100-$300</option>
+                      <option>$300+</option>
+                    </select>
+
+                    <textarea placeholder="Message"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-6 py-4 bg-slate-800/50 border border-white/5 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all resize-none"
-                      placeholder="Tell me about your project..."
-                    />
-                  </div>
+                      className="input h-32" />
 
-                  {status === "error" && (
-                    <div className="flex items-center gap-3 p-4 bg-red-500/10 text-red-400 rounded-2xl border border-red-500/20">
-                      <AlertCircle size={20} />
-                      <p className="text-sm font-medium">{errorMessage}</p>
-                    </div>
-                  )}
+                    {status === "error" && <p className="text-red-400">{errorMessage}</p>}
 
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-bold rounded-2xl hover:from-fuchsia-500 hover:to-purple-500 transition-all shadow-lg shadow-fuchsia-500/20 disabled:opacity-50 disabled:cursor-not-allowed group"
-                  >
-                    {status === "loading" ? "Sending..." : "Send Message"}
-                    <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </button>
-                </form>
-              )}
-            </motion.div>
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-xl text-white"
+                    >
+                      {status === "loading" ? "Sending..." : "Send Message"}
+                    </motion.button>
+
+                  </motion.form>
+                )}
+              </AnimatePresence>
+
+            </div>
           </div>
         </div>
       </section>
