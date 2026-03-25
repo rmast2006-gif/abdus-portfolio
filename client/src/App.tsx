@@ -34,8 +34,16 @@ const AppContent = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // ✅ FIX: Force reflow after route change (prevents blue screen / delayed render)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 50);
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
+
   return (
-    <div className="bg-slate-950 min-h-screen text-slate-200 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
+    <div className="bg-slate-950 min-h-screen w-full overflow-x-hidden text-slate-200 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
       {!isAdminPage && <Cursor />}
       {!isAdminPage && <Navbar />}
       
@@ -47,126 +55,129 @@ const AppContent = () => {
         />
       )}
 
-      <AnimatePresence mode="wait">
-        <Suspense
-          fallback={
-            <div className="h-screen w-full flex items-center justify-center bg-slate-950">
-              <div className="w-12 h-12 border-4 border-fuchsia-500/20 border-t-fuchsia-500 rounded-full animate-spin" />
-            </div>
-          }
-        >
-          <Routes location={location} key={location.pathname}>
-            <Route
-              path="/"
-              element={
-                <PageTransition>
-                  <Home />
-                </PageTransition>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <PageTransition>
-                  <About />
-                </PageTransition>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <PageTransition>
-                  <Projects />
-                </PageTransition>
-              }
-            />
-            <Route
-              path="/skills"
-              element={
-                <PageTransition>
-                  <Skills />
-                </PageTransition>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <PageTransition>
-                  <Contact />
-                </PageTransition>
-              }
-            />
+      {/* ✅ FIX: wrapper to stabilize layout + prevent shifting */}
+      <div className="w-full min-h-screen relative">
+        <AnimatePresence mode="wait" initial={false}>
+          <Suspense
+            fallback={
+              <div className="h-screen w-full flex items-center justify-center bg-slate-950">
+                <div className="w-12 h-12 border-4 border-fuchsia-500/20 border-t-fuchsia-500 rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <Routes location={location} key={location.pathname}>
+              <Route
+                path="/"
+                element={
+                  <PageTransition>
+                    <Home />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PageTransition>
+                    <About />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <PageTransition>
+                    <Projects />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/skills"
+                element={
+                  <PageTransition>
+                    <Skills />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PageTransition>
+                    <Contact />
+                  </PageTransition>
+                }
+              />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/home"
-              element={
-                <ProtectedRoute>
-                  <EditHome />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/about"
-              element={
-                <ProtectedRoute>
-                  <EditAbout />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/projects"
-              element={
-                <ProtectedRoute>
-                  <EditProjects />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/skills"
-              element={
-                <ProtectedRoute>
-                  <EditSkills />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/contact"
-              element={
-                <ProtectedRoute>
-                  <EditContact />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/edit/global"
-              element={
-                <ProtectedRoute>
-                  <EditGlobal />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/messages"
-              element={
-                <ProtectedRoute>
-                  <Messages />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Suspense>
-      </AnimatePresence>
+              {/* Admin Routes */}
+              <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/home"
+                element={
+                  <ProtectedRoute>
+                    <EditHome />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/about"
+                element={
+                  <ProtectedRoute>
+                    <EditAbout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/projects"
+                element={
+                  <ProtectedRoute>
+                    <EditProjects />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/skills"
+                element={
+                  <ProtectedRoute>
+                    <EditSkills />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/contact"
+                element={
+                  <ProtectedRoute>
+                    <EditContact />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/global"
+                element={
+                  <ProtectedRoute>
+                    <EditGlobal />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/messages"
+                element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </AnimatePresence>
+      </div>
 
       {!isAdminPage && <Footer />}
     </div>
