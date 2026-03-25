@@ -40,9 +40,7 @@ export const apiUpdateContent = (data: any) =>
 
 // Upload
 export const apiUploadImage = (formData: FormData) =>
-  authApi.post("/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  authApi.post("/upload", formData); // ✅ FIXED: removed headers
 
 // Skills
 export const apiGetSkills = () => api.get("/skills");
