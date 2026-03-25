@@ -3,11 +3,18 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* ✅ NEW: Green Theme Variables */
+  --green-500: #10b981;
+  --green-600: #059669;
+  --green-700: #047857;
+  --green-800: #065f46;
 }
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-200 antialiased;
+    /* ✅ UPDATED: Dark green background */
+    @apply bg-[#021a12] text-slate-200 antialiased;
   }
 }
 
@@ -16,12 +23,14 @@
     @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
   
+  /* ✅ UPDATED: Green gradient text */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-green-500 via-green-600 to-green-700;
   }
 
+  /* ✅ UPDATED: Green luxury gradient */
   .luxury-gradient {
-    @apply bg-gradient-to-br from-fuchsia-600/20 via-purple-600/20 to-emerald-600/20;
+    @apply bg-gradient-to-br from-green-600/20 via-green-700/20 to-green-800/20;
   }
 }
 
@@ -31,9 +40,10 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-950;
+  @apply bg-[#021a12];
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded-full hover:bg-fuchsia-600 transition-colors;
+  /* ✅ UPDATED: Green scrollbar */
+  @apply bg-slate-800 rounded-full hover:bg-green-600 transition-colors;
 }
