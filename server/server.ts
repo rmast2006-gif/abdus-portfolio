@@ -20,7 +20,7 @@ const app = express();
 // ✅ connect DB
 connectDB();
 
-// ✅ FIXED CORS (production ready)
+// ✅ CORS (THIS IS ENOUGH)
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -30,8 +30,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ FIXED: changed "*" → "/*" (prevents crash)
-app.options("/*", cors());
+// ❌ REMOVED app.options (causing crash)
 
 app.use(express.json());
 
@@ -47,7 +46,7 @@ app.use("/api/content", contentRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// ✅ STATIC (serving images)
+// ✅ STATIC
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -56,7 +55,7 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
-// ✅ THIS IS REQUIRED FOR RAILWAY
+// ✅ PORT
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
