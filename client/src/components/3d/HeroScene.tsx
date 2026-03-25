@@ -1,101 +1,39 @@
-import React, { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, RoundedBox, MeshTransmissionMaterial, Stars } from "@react-three/drei";
-import * as THREE from "three";
+import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 
-// ─────────────────────────────────────────────
-// 3D IMAGE HOLDER (EMPTY FOR NOW)
-// You can later replace the material with texture
-// ─────────────────────────────────────────────
-const ImageHolder = () => {
-  const ref = useRef<THREE.Mesh>(null);
+interface HeroSceneProps {
+  modelUrl: string;
+}
 
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
+// ✅ Preload (performance boost)
+useGLTF.preload("/default.glb");
 
-    // Smooth rotation
-    ref.current.rotation.y = clock.getElapsedTime() * 0.3;
-
-    // Floating animation
-    ref.current.position.y = Math.sin(clock.getElapsedTime()) * 0.2;
-  });
-
-  return (
-    <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.6}>
-      <RoundedBox
-        ref={ref}
-        args={[2.5, 3.5, 0.2]} // width, height, depth
-        radius={0.25}
-        smoothness={4}
-        position={[4, 0, 0]}
-      >
-        {/* Glass / premium look */}
-        <MeshTransmissionMaterial
-          thickness={0.6}
-          roughness={0.1}
-          transmission={1}
-          ior={1.2}
-          chromaticAberration={0.05}
-          backside
-        />
-      </RoundedBox>
-    </Float>
-  );
+// 🔹 Model Loader
+const Model = ({ url }: { url: string }) => {
+  const { scene } = useGLTF(url);
+  return <primitive object={scene} scale={1.5} />;
 };
 
-// ─────────────────────────────────────────────
-// BACKGROUND PARTICLES
-// ─────────────────────────────────────────────
-const Particles = () => {
-  const ref = useRef<THREE.Points>(null);
-
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    ref.current.rotation.y = clock.getElapsedTime() * 0.05;
-  });
-
+export const HeroScene = ({ modelUrl }: HeroSceneProps) => {
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={200}
-          array={new Float32Array(
-            Array.from({ length: 600 }, () => (Math.random() - 0.5) * 20)
-          )}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial size={0.03} color="#a855f7" />
-    </points>
-  );
-};
-
-// ─────────────────────────────────────────────
-// MAIN HERO SCENE
-// ─────────────────────────────────────────────
-export const HeroScene = () => {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-      }}
-    >
-      <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+    <div className="absolute inset-0 z-0 pointer-events-none">
+      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+        
         {/* Lights */}
-        <ambientLight intensity={0.3} />
-        <pointLight position={[5, 5, 5]} intensity={1.5} color="#d946ef" />
-        <pointLight position={[-5, -5, -5]} intensity={1} color="#7c3aed" />
+        <ambientLight intensity={1} />
+        <directionalLight position={[5, 5, 5]} />
 
-        {/* 3D HOLDER */}
-        <ImageHolder />
+        {/* Model */}
+        <Suspense fallback={null}>
+          {modelUrl ? (
+            <Model url={modelUrl} />
+          ) : (
+            <Model url="/default.glb" />
+          )}
+        </Suspense>
 
-        {/* Background */}
-        <Particles />
-        <Stars radius={80} depth={40} count={600} factor={3} fade speed={0.5} />
+        <OrbitControls enableZoom={false} />
       </Canvas>
     </div>
   );
