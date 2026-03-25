@@ -22,11 +22,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ currentImage, onUploadSuccess
     setStatus("idle");
 
     const formData = new FormData();
-    formData.append("image", file);
+
+    // ✅ FIXED: changed "image" → "file" (matches backend upload.single("file"))
+    formData.append("file", file);
 
     try {
       const response = await apiUploadImage(formData);
+
+      // keeping your original logic intact
       onUploadSuccess(response.data.url);
+
       setStatus("success");
     } catch (error) {
       console.error("Upload failed:", error);
