@@ -108,10 +108,34 @@ export const Contact = () => {
         <ContactParticles />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <SectionHeader
-            title="Get In Touch"
-            subtitle="Open to freelance work and all opportunities"
-          />
+
+          {/* ✅ UPDATED HEADER WITH ACTIVE STATUS */}
+          <div className="text-center mb-16">
+
+            <SectionHeader
+              title="Get In Touch"
+              subtitle=""
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center justify-center gap-3 mt-4"
+            >
+              {/* Animated Green Dot */}
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+
+              {/* Text */}
+              <p className="text-green-400 font-medium">
+                Open to freelance work and all opportunities
+              </p>
+            </motion.div>
+
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-16">
 
@@ -156,7 +180,6 @@ export const Contact = () => {
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
 
-                    {/* NAME */}
                     <input
                       type="text"
                       placeholder="Your Name"
@@ -165,7 +188,6 @@ export const Contact = () => {
                       className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
                     />
 
-                    {/* EMAIL */}
                     <input
                       type="email"
                       placeholder="Your Email"
@@ -174,7 +196,6 @@ export const Contact = () => {
                       className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
                     />
 
-                    {/* MESSAGE */}
                     <textarea
                       rows={5}
                       placeholder="Your Message..."
@@ -183,14 +204,12 @@ export const Contact = () => {
                       className="w-full p-4 rounded-xl bg-slate-800 border border-white/10 text-white focus:ring-2 focus:ring-fuchsia-500"
                     />
 
-                    {/* ERROR */}
                     {status === "error" && (
                       <div className="text-red-400 flex gap-2">
                         <AlertCircle size={18} /> {errorMessage}
                       </div>
                     )}
 
-                    {/* BUTTON */}
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
