@@ -4,27 +4,23 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { apiGetPageContent, apiUpdateContent } from "../../utils/api.ts";
 import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
 
+// ─────────────────────────────────────────────
+// ADMIN EDIT HOME — FULL LENGTH VERSION
+// ─────────────────────────────────────────────
 const EditHome = () => {
+
   const navigate = useNavigate();
   const { isAuthenticated } = useAdminAuth();
 
+  // STATES
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [content, setContent] = useState<any>({});
 
-  const [content, setContent] = useState<any>({
-    hero: {
-      heading: "",
-      subheading: "",
-      bio: "",
-      cta_primary: "",
-      cta_secondary: "",
-      model3d: ""
-    },
-    stats: {}
-  });
-
+  // FETCH DATA
   useEffect(() => {
+
     if (!isAuthenticated) {
       navigate("/admin/login");
       return;
@@ -41,16 +37,19 @@ const EditHome = () => {
         }, {});
 
         setContent(transformed);
+
       } catch (error) {
-        console.error("Error fetching content:", error);
+        console.error("Fetch error:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchContent();
+
   }, [isAuthenticated, navigate]);
 
+  // CHANGE HANDLER
   const handleChange = (section: string, key: string, value: string) => {
     setContent((prev: any) => ({
       ...prev,
@@ -61,23 +60,17 @@ const EditHome = () => {
     }));
   };
 
-  // 🔥 FILE UPLOAD (ONLY ADDITION — nothing removed)
+  // UPLOAD HANDLER
   const handleFileUpload = async (file: File) => {
     try {
-      if (!file.name.endsWith(".glb") && !file.name.endsWith(".gltf")) {
-        alert("Only .glb or .gltf files allowed");
-        return;
-      }
-
       setUploading(true);
 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "YOUR_UPLOAD_PRESET");
-      formData.append("resource_type", "auto");
 
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/auto/upload",
+        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
         {
           method: "POST",
           body: formData,
@@ -88,16 +81,16 @@ const EditHome = () => {
 
       if (!data.secure_url) throw new Error("Upload failed");
 
-      handleChange("hero", "model3d", data.secure_url);
+      handleChange("hero", "hero_image", data.secure_url);
 
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
       alert("Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
+  // SAVE
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -118,80 +111,79 @@ const EditHome = () => {
       }
 
       await Promise.all(promises);
-      alert("All changes saved successfully!");
+      alert("Saved successfully!");
+
     } catch (error) {
-      console.error("Error saving content:", error);
-      alert("Failed to save changes.");
+      alert("Save failed");
     } finally {
       setSaving(false);
     }
   };
 
+  // LOADING
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 className="text-fuchsia-500 animate-spin" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <Loader2 className="animate-spin text-fuchsia-500" size={40} />
       </div>
     );
   }
 
+  // UI
   return (
     <div className="min-h-screen bg-slate-950 pt-32 pb-20 px-6">
+
       <div className="max-w-4xl mx-auto">
 
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-12">
+
           <div className="flex items-center gap-4">
-            <Link
-              to="/admin/dashboard"
-              className="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white"
-            >
-              <ArrowLeft size={20} />
+            <Link to="/admin/dashboard">
+              <ArrowLeft className="text-white" />
             </Link>
-            <h1 className="text-4xl font-bold text-white">Edit Home Page</h1>
+            <h1 className="text-3xl text-white font-bold">Edit Home Page</h1>
           </div>
 
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-xl text-white font-bold"
-          >
-            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-            Save All Changes
+          <button onClick={handleSave} className="btn-primary">
+            {saving ? <Loader2 className="animate-spin" /> : <Save />}
+            Save Changes
           </button>
+
         </div>
 
-        {/* Hero Section */}
-        <section className="glass p-8 rounded-2xl border border-white/10 space-y-6">
+        {/* HERO SECTION */}
+        <div className="bg-white/5 p-8 rounded-2xl border border-white/10 space-y-6">
+
+          <h2 className="text-xl text-white font-bold">Hero Section</h2>
 
           <input
             type="text"
+            placeholder="Heading"
             value={content.hero?.heading || ""}
             onChange={(e) => handleChange("hero", "heading", e.target.value)}
-            className="w-full input"
-            placeholder="Heading"
+            className="input"
           />
 
           <input
             type="text"
+            placeholder="Subheading"
             value={content.hero?.subheading || ""}
             onChange={(e) => handleChange("hero", "subheading", e.target.value)}
-            className="w-full input"
-            placeholder="Subheading"
+            className="input"
           />
 
           <textarea
+            rows={4}
+            placeholder="Bio"
             value={content.hero?.bio || ""}
             onChange={(e) => handleChange("hero", "bio", e.target.value)}
-            className="w-full input"
-            placeholder="Bio"
+            className="input"
           />
 
-          {/* 🔥 DRAG & DROP — ADDED, NOTHING REMOVED */}
+          {/* IMAGE UPLOAD */}
           <div>
-            <label className="block text-sm text-slate-400 mb-2">
-              3D Model Upload (.glb)
-            </label>
+            <p className="text-slate-400 mb-2">Hero Image (3D Holder)</p>
 
             <div
               onDragOver={(e) => e.preventDefault()}
@@ -200,16 +192,14 @@ const EditHome = () => {
                 const file = e.dataTransfer.files[0];
                 if (file) handleFileUpload(file);
               }}
-              className="w-full border-2 border-dashed border-white/20 rounded-xl p-8 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
+              className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
             >
-              {uploading
-                ? "Uploading..."
-                : "Drag & Drop your .glb file here"}
+              {uploading ? "Uploading..." : "Drag & Drop Image Here"}
             </div>
 
             <input
               type="file"
-              accept=".glb,.gltf"
+              accept="image/*"
               onChange={(e) => {
                 if (e.target.files?.[0]) {
                   handleFileUpload(e.target.files[0]);
@@ -218,12 +208,12 @@ const EditHome = () => {
               className="mt-4 text-white"
             />
 
-            {content.hero?.model3d && (
-              <p className="text-green-400 mt-2">Model uploaded ✔</p>
+            {content.hero?.hero_image && (
+              <p className="text-green-400 mt-2">Image uploaded ✔</p>
             )}
           </div>
 
-        </section>
+        </div>
 
       </div>
     </div>

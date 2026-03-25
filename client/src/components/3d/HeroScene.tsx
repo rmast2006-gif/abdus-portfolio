@@ -1,131 +1,109 @@
-import React, { Suspense, useRef, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Environment } from "@react-three/drei";
-import * as THREE from "three";
+import React, { useRef } from "react";
+import { motion, useMotionValue } from "framer-motion";
 
 // ─────────────────────────────────────────────
-// Props Type
+// Props Type (FIXED)
 // ─────────────────────────────────────────────
 type Props = {
-  modelUrl?: string;
+  imageUrl?: string;
 };
 
 // ─────────────────────────────────────────────
-// Model Component (Handles 3D object + animation)
+// HeroScene Component (3D IMAGE HOLDER)
 // ─────────────────────────────────────────────
-const Model = ({ url }: { url?: string }) => {
-  const ref = useRef<THREE.Group>(null);
-
-  // Prevent loading if no model from admin
-  if (!url) return null;
-
-  // Load model dynamically
-  const { scene } = useGLTF(url);
-
-  // Optional: clone scene to avoid mutation issues
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
+export const HeroScene = ({ imageUrl }: Props) => {
 
   // ─────────────────────────────────────────
-  // Animation Loop (runs every frame)
+  // Refs & Motion Values
   // ─────────────────────────────────────────
-  useFrame((state) => {
-    if (!ref.current) return;
+  const cardRef = useRef<HTMLDivElement>(null);
 
-    const elapsed = state.clock.elapsedTime;
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
 
-    // Floating motion (smooth vertical oscillation)
-    ref.current.position.y = Math.sin(elapsed * 1.2) * 0.3;
+  // ─────────────────────────────────────────
+  // Mouse Move Interaction (3D Tilt)
+  // ─────────────────────────────────────────
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-    // Continuous rotation (main hero effect)
-    ref.current.rotation.y += 0.004;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    // Mouse interaction (tilt effect)
-    ref.current.rotation.x = THREE.MathUtils.lerp(
-      ref.current.rotation.x,
-      state.mouse.y * 0.3,
-      0.05
-    );
+    const midX = rect.width / 2;
+    const midY = rect.height / 2;
 
-    ref.current.rotation.z = THREE.MathUtils.lerp(
-      ref.current.rotation.z,
-      state.mouse.x * 0.3,
-      0.05
-    );
-  });
+    rotateY.set((x - midX) / 15);
+    rotateX.set(-(y - midY) / 15);
+  };
 
-  // Render model
+  // ─────────────────────────────────────────
+  // Reset Tilt
+  // ─────────────────────────────────────────
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+  };
+
+  // ─────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────
   return (
-    <group ref={ref} scale={1.5} dispose={null}>
-      <primitive object={clonedScene} />
-    </group>
-  );
-};
+    <div className="w-full h-full flex items-center justify-center">
 
-// ─────────────────────────────────────────────
-// HeroScene Component (Canvas + Lighting + Scene)
-// ─────────────────────────────────────────────
-export const HeroScene = ({ modelUrl }: Props) => {
-  return (
-    <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* OUTER WRAPPER */}
+      <div className="relative flex items-center justify-center">
 
-      <Canvas
-        camera={{
-          position: [0, 0, 6],
-          fov: 45,
-        }}
-        gl={{
-          alpha: true,
-          antialias: true,
-        }}
-      >
+        {/* GLOW BACKGROUND */}
+        <div className="absolute w-[420px] h-[420px] bg-fuchsia-600/20 blur-[120px] rounded-full pointer-events-none" />
 
-        {/* ───────────── Lighting Setup ───────────── */}
+        {/* ───────── 3D ROTATING HOLDER ───────── */}
+        <motion.div
+          ref={cardRef}
 
-        {/* Base ambient light */}
-        <ambientLight intensity={0.6} />
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
 
-        {/* Key light */}
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={1}
-          castShadow
-        />
+          style={{
+            rotateX,
+            rotateY,
+            transformPerspective: 1200,
+          }}
 
-        {/* Fill light (soft purple tone) */}
-        <directionalLight
-          position={[-5, -3, 2]}
-          intensity={0.5}
-          color="#f0abfc"
-        />
+          // Continuous rotation
+          animate={{
+            rotateY: [0, 360],
+          }}
 
-        {/* Accent light (front glow) */}
-        <pointLight
-          position={[0, 2, 4]}
-          intensity={1.2}
-          color="#a855f7"
-        />
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "linear",
+          }}
 
-        {/* Environment for subtle reflections */}
-        <Environment preset="city" />
+          className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900"
+        >
 
-        {/* Depth fog (matches dark UI) */}
-        <fog attach="fog" args={["#020617", 8, 20]} />
+          {/* INNER LIGHT OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 z-10" />
 
-        {/* ───────────── Model Loader ───────────── */}
+          {/* IMAGE CONTENT */}
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Hero"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-slate-500">
+              Upload Image from Admin Panel
+            </div>
+          )}
 
-        <Suspense fallback={null}>
-          <Model url={modelUrl} />
-        </Suspense>
+        </motion.div>
 
-        {/* ───────────── Controls (disabled interaction) ───────────── */}
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={false}
-        />
-
-      </Canvas>
+      </div>
     </div>
   );
 };
