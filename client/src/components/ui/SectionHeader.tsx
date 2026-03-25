@@ -15,15 +15,28 @@ export const SectionHeader = ({ title, subtitle, align = "left" }: SectionHeader
       transition={{ duration: 0.6 }}
       className={`mb-12 ${align === "center" ? "text-center" : "text-left"}`}
     >
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+      {/* ✅ FIX: prevent text cursor */}
+      <h2
+        className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight select-none cursor-default"
+        style={{ userSelect: "none" }}
+      >
         {title}
       </h2>
+
       {subtitle && (
-        <p className="text-lg text-slate-400 max-w-2xl mx-auto md:mx-0">
+        <p
+          className="text-lg text-slate-400 max-w-2xl mx-auto md:mx-0 select-none cursor-default"
+          style={{ userSelect: "none" }}
+        >
           {subtitle}
         </p>
       )}
-      <div className={`h-1.5 w-24 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 rounded-full mt-6 ${align === "center" ? "mx-auto" : ""}`} />
+
+      <div
+        className={`h-1.5 w-24 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 rounded-full mt-6 ${
+          align === "center" ? "mx-auto" : ""
+        }`}
+      />
     </motion.div>
   );
 };
