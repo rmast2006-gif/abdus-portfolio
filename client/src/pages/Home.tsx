@@ -46,7 +46,7 @@ export const Home = () => {
     stat3_label: "Code",
   };
 
-  // 🔥 from admin panel
+  // ✅ from admin ONLY
   const modelUrl = content.hero?.model3d;
 
   return (
@@ -65,30 +65,45 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-6xl md:text-8xl font-bold text-white mb-8">
-                I'm <span className="text-gradient">{hero.heading}</span>
+              <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
+                I'm <span className="text-gradient">{hero.heading}</span> <br />
+                {hero.subheading}
               </h1>
 
-              <p className="text-xl text-slate-400 mb-12">
+              <p className="text-xl md:text-2xl text-slate-400 mb-12 leading-relaxed">
                 {hero.bio}
               </p>
 
-              <div className="flex gap-6">
-                <Link to="/projects" className="btn-primary">
+              <div className="flex flex-col sm:flex-row gap-6">
+                <Link
+                  to="/projects"
+                  className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white text-lg font-bold rounded-full hover:scale-105 transition"
+                >
                   {hero.cta_primary}
                   <ArrowRight size={20} />
                 </Link>
 
-                <Link to="/contact" className="btn-secondary">
+                <Link
+                  to="/contact"
+                  className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white text-lg font-bold rounded-full border border-white/10 hover:bg-slate-800 hover:scale-105 transition"
+                >
                   {hero.cta_secondary}
                 </Link>
               </div>
             </motion.div>
 
-            <div className="mt-20 grid grid-cols-3 gap-8">
+            <motion.div
+              className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
               {[Zap, Rocket, Code2].map((Icon, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Icon />
+                <div key={i} className="flex items-center gap-4 group">
+                  <div className="p-3 bg-slate-900/80 rounded-2xl group-hover:scale-110 transition">
+                    <Icon size={24} />
+                  </div>
+
                   <div>
                     <h4 className="text-white font-bold">
                       {stats[`stat${i + 1}_value`]}
@@ -99,7 +114,7 @@ export const Home = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </motion.div>
 
           </div>
         </div>

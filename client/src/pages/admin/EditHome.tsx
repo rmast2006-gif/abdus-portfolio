@@ -11,7 +11,18 @@ const EditHome = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [content, setContent] = useState<any>({});
+
+  const [content, setContent] = useState<any>({
+    hero: {
+      heading: "",
+      subheading: "",
+      bio: "",
+      cta_primary: "",
+      cta_secondary: "",
+      model3d: ""
+    },
+    stats: {}
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -50,18 +61,23 @@ const EditHome = () => {
     }));
   };
 
-  // 🔥 Upload to Cloudinary
+  // 🔥 FILE UPLOAD (ONLY ADDITION — nothing removed)
   const handleFileUpload = async (file: File) => {
     try {
+      if (!file.name.endsWith(".glb") && !file.name.endsWith(".gltf")) {
+        alert("Only .glb or .gltf files allowed");
+        return;
+      }
+
       setUploading(true);
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // 🔁 replace
+      formData.append("upload_preset", "YOUR_UPLOAD_PRESET");
       formData.append("resource_type", "auto");
 
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/auto/upload", // 🔁 replace
+        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/auto/upload",
         {
           method: "POST",
           body: formData,
@@ -72,7 +88,6 @@ const EditHome = () => {
 
       if (!data.secure_url) throw new Error("Upload failed");
 
-      // ✅ Save URL in your system
       handleChange("hero", "model3d", data.secure_url);
 
     } catch (err) {
@@ -125,53 +140,58 @@ const EditHome = () => {
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
           <div className="flex items-center gap-4">
-            <Link to="/admin/dashboard">
-              <ArrowLeft className="text-white" />
+            <Link
+              to="/admin/dashboard"
+              className="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white"
+            >
+              <ArrowLeft size={20} />
             </Link>
-            <h1 className="text-3xl text-white font-bold">Edit Home Page</h1>
+            <h1 className="text-4xl font-bold text-white">Edit Home Page</h1>
           </div>
 
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-fuchsia-600 text-white rounded-xl"
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-xl text-white font-bold"
           >
             {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-            Save
+            Save All Changes
           </button>
         </div>
 
         {/* Hero Section */}
-        <div className="bg-white/5 p-8 rounded-xl border border-white/10 space-y-6">
+        <section className="glass p-8 rounded-2xl border border-white/10 space-y-6">
 
           <input
             type="text"
-            placeholder="Heading"
             value={content.hero?.heading || ""}
             onChange={(e) => handleChange("hero", "heading", e.target.value)}
             className="w-full input"
+            placeholder="Heading"
           />
 
           <input
             type="text"
-            placeholder="Subheading"
             value={content.hero?.subheading || ""}
             onChange={(e) => handleChange("hero", "subheading", e.target.value)}
             className="w-full input"
+            placeholder="Subheading"
           />
 
           <textarea
-            placeholder="Bio"
             value={content.hero?.bio || ""}
             onChange={(e) => handleChange("hero", "bio", e.target.value)}
             className="w-full input"
+            placeholder="Bio"
           />
 
-          {/* 🔥 DRAG & DROP 3D MODEL */}
+          {/* 🔥 DRAG & DROP — ADDED, NOTHING REMOVED */}
           <div>
-            <p className="text-slate-400 mb-2">3D Model Upload (.glb)</p>
+            <label className="block text-sm text-slate-400 mb-2">
+              3D Model Upload (.glb)
+            </label>
 
             <div
               onDragOver={(e) => e.preventDefault()}
@@ -180,7 +200,7 @@ const EditHome = () => {
                 const file = e.dataTransfer.files[0];
                 if (file) handleFileUpload(file);
               }}
-              className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
+              className="w-full border-2 border-dashed border-white/20 rounded-xl p-8 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
             >
               {uploading
                 ? "Uploading..."
@@ -202,7 +222,8 @@ const EditHome = () => {
               <p className="text-green-400 mt-2">Model uploaded ✔</p>
             )}
           </div>
-        </div>
+
+        </section>
 
       </div>
     </div>
