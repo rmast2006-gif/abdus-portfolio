@@ -1,36 +1,59 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text, Float, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { Project } from "../../types.ts";
 
-const ProjectCard3D = ({ project, position }: any) => {
+// 🔥 Single 3D Card
+const ProjectCard3D = ({
+  project,
+  position,
+}: {
+  project: Project;
+  position: [number, number, number];
+}) => {
   const ref = useRef<THREE.Group>(null);
+  const [hovered, setHovered] = useState(false);
 
+  // Smooth rotation
   useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.rotation.y += delta * 0.3;
-    }
+    if (!ref.current) return;
+    ref.current.rotation.y += delta * 0.25;
   });
 
   return (
-    <Float>
+    <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.4}>
       <group
         ref={ref}
         position={position}
         onClick={() => {
+          // 🔥 Open project
           if (project.liveLink) {
             window.open(project.liveLink, "_blank");
           } else if (project.githubLink) {
             window.open(project.githubLink, "_blank");
           }
         }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       >
-        <RoundedBox args={[3, 2, 0.15]}>
-          <meshStandardMaterial color="#1e1b4b" />
+        {/* Card */}
+        <RoundedBox args={[3, 2, 0.15]} radius={0.2}>
+          <meshStandardMaterial
+            color={hovered ? "#9333ea" : "#1e1b4b"}
+            metalness={0.4}
+            roughness={0.3}
+          />
         </RoundedBox>
 
-        <Text position={[0, 0, 0.2]} fontSize={0.25}>
+        {/* Title */}
+        <Text
+          position={[0, 0, 0.2]}
+          fontSize={0.25}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+        >
           {project.title}
         </Text>
       </group>
@@ -38,20 +61,42 @@ const ProjectCard3D = ({ project, position }: any) => {
   );
 };
 
-const ProjectsScene = ({ projects }: any) => {
-  return (
-    <div className="h-[600px] w-full">
-      <Canvas camera={{ position: [0, 2, 10] }}>
-        <ambientLight />
-        <pointLight position={[5, 5, 5]} />
+// 🔥 Main Scene
+const ProjectsScene = ({
+  projects,
+}: {
+  projects: Project[];
+}) => {
+  const safeProjects = Array.isArray(projects) ? projects : [];
+  const radius = 6;
 
-        {projects.map((p: any, i: number) => (
-          <ProjectCard3D
-            key={p._id}
-            project={p}
-            position={[i * 4 - 4, 0, 0]}
-          />
-        ))}
+  return (
+    <div className="h-[600px] w-full rounded-3xl overflow-hidden border border-white/5">
+      <Canvas
+        camera={{ position: [0, 2, 10], fov: 55 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: false }} // performance boost
+      >
+        {/* Lights */}
+        <ambientLight intensity={0.6} />
+        <pointLight position={[5, 5, 5]} intensity={1} />
+
+        {/* Circular 3D Layout */}
+        {safeProjects.map((project, i) => {
+          const angle = (i / safeProjects.length) * Math.PI * 2;
+
+          return (
+            <ProjectCard3D
+              key={project._id}
+              project={project}
+              position={[
+                Math.cos(angle) * radius,
+                0,
+                Math.sin(angle) * radius,
+              ]}
+            />
+          );
+        })}
       </Canvas>
     </div>
   );
