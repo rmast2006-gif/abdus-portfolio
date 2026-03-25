@@ -30,8 +30,8 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ IMPORTANT for preflight (Railway fix)
-app.options("*", cors());
+// ✅ FIXED: changed "*" → "/*" (prevents crash)
+app.options("/*", cors());
 
 app.use(express.json());
 
