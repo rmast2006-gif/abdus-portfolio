@@ -42,6 +42,29 @@ const AppContent = () => {
     return () => clearTimeout(timeout);
   }, [location.pathname]);
 
+  // ✅ GLOBAL FIX: remove caret from entire user panel
+  useEffect(() => {
+    if (!isAdminPage) {
+      const style = document.createElement("style");
+      style.setAttribute("data-no-caret", "true");
+
+      style.innerHTML = `
+        *:not(input):not(textarea):not([contenteditable="true"]) {
+          caret-color: transparent !important;
+        }
+      `;
+
+      document.head.appendChild(style);
+
+      return () => {
+        const existing = document.querySelector('style[data-no-caret="true"]');
+        if (existing) {
+          document.head.removeChild(existing);
+        }
+      };
+    }
+  }, [isAdminPage]);
+
   return (
     <div className="bg-slate-950 min-h-screen w-full overflow-x-hidden text-slate-200 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
       {!isAdminPage && <Cursor />}
