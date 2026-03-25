@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "motion/react";
 import { SectionHeader } from "../components/ui/SectionHeader.tsx";
 import { SkillsOrb } from "../components/3d/SkillsOrb.tsx";
@@ -8,7 +8,9 @@ import { apiGetSkills } from "../utils/api.ts";
 
 export const Skills = () => {
   const [skills, setSkills] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // 🔥 FETCH SKILLS
   useEffect(() => {
     const fetchSkills = async () => {
       try {
@@ -16,6 +18,8 @@ export const Skills = () => {
         setSkills(response.data);
       } catch (error) {
         console.error("Error fetching skills:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchSkills();
@@ -23,53 +27,106 @@ export const Skills = () => {
 
   const categories = ["Frontend", "Backend", "Tools", "Other"];
 
+  const featureCards = [
+    {
+      title: "Architecture",
+      text: "Designing scalable and maintainable system architectures using modern patterns and best practices.",
+      hoverColor: "hover:bg-fuchsia-600/10",
+      shadowColor: "hover:shadow-fuchsia-500/5",
+      glowColor: "from-fuchsia-600 to-purple-600",
+    },
+    {
+      title: "3D Interaction",
+      text: "Creating immersive 3D environments using Three.js and React Three Fiber.",
+      hoverColor: "hover:bg-purple-600/10",
+      shadowColor: "hover:shadow-purple-500/5",
+      glowColor: "from-purple-600 to-indigo-600",
+    },
+    {
+      title: "Full-Stack",
+      text: "Building robust backends and seamless frontends with modern tech stacks.",
+      hoverColor: "hover:bg-emerald-600/10",
+      shadowColor: "hover:shadow-emerald-500/5",
+      glowColor: "from-emerald-600 to-teal-600",
+    },
+  ];
+
   return (
     <PageTransition>
       <section className="pt-32 pb-20 bg-slate-950 min-h-screen">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <SectionHeader 
-            title="My Skills" 
-            subtitle="I've mastered a diverse set of technologies to build modern, high-performance web applications."
+
+          {/* HEADER */}
+          <SectionHeader
+            title="My Skills"
+            subtitle="Technologies I use to build modern applications"
           />
 
+          {/* MAIN GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
+
+            {/* LEFT SIDE */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h3 className="text-3xl font-bold text-white mb-8 leading-tight">
-                Technical <span className="text-gradient">Expertise</span> & <br />
-                Creative Problem Solving.
+              <h3 className="text-3xl font-bold text-white mb-8">
+                Technical <span className="text-gradient">Expertise</span>
               </h3>
-              <p className="text-lg text-slate-400 mb-12 leading-relaxed">
-                I specialize in building interactive 3D experiences and scalable full-stack applications. 
-                My workflow is focused on clean code, performance optimization, and user-centric design.
+
+              <p className="text-lg text-slate-400 mb-12">
+                I specialize in building interactive 3D experiences and scalable
+                full-stack applications with performance and UX in mind.
               </p>
 
+              {/* SKILLS BY CATEGORY */}
               <div className="space-y-12">
                 {categories.map((category, index) => {
-                  const categorySkills = skills.filter(s => s.category === category);
+                  const categorySkills = skills.filter(
+                    (s) => s.category === category
+                  );
+
                   if (categorySkills.length === 0) return null;
 
                   return (
-                    <div key={category}>
+                    <motion.div
+                      key={category}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      {/* CATEGORY TITLE */}
                       <h4 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span className="w-8 h-8 bg-gradient-to-br from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center text-xs font-mono">0{index + 1}</span>
+                        <motion.span
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                          className="w-8 h-8 bg-gradient-to-br from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center text-xs font-mono shadow-lg"
+                        >
+                          0{index + 1}
+                        </motion.span>
                         {category}
                       </h4>
+
+                      {/* SKILL BARS */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-2">
                         {categorySkills.map((skill) => (
-                          <SkillBar key={skill._id} name={skill.name} level={skill.level} />
+                          <SkillBar
+                            key={skill._id}
+                            name={skill.name}
+                            level={skill.level}
+                          />
                         ))}
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
             </motion.div>
 
+            {/* RIGHT SIDE - 3D ORB */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -78,30 +135,56 @@ export const Skills = () => {
               className="relative"
             >
               <div className="absolute -inset-10 bg-fuchsia-600/10 rounded-full blur-3xl" />
-              <SkillsOrb />
+
+              <h4 className="text-white text-lg mb-4 text-center">
+                Interactive Skills Visualization
+              </h4>
+
+              {/* 🔥 LAZY LOAD FIX */}
+              <Suspense
+                fallback={
+                  <div className="h-[500px] flex items-center justify-center text-slate-400">
+                    Loading 3D Skills...
+                  </div>
+                }
+              >
+                <SkillsOrb skills={skills} />
+              </Suspense>
             </motion.div>
           </div>
 
+          {/* FEATURE CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 text-center group hover:bg-fuchsia-600/10 transition-all hover:-translate-y-2">
-              <h4 className="text-2xl font-bold text-white mb-4">Architecture</h4>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Designing scalable and maintainable system architectures using modern patterns and best practices.
-              </p>
-            </div>
-            <div className="p-8 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 text-center group hover:bg-purple-600/10 transition-all hover:-translate-y-2">
-              <h4 className="text-2xl font-bold text-white mb-4">3D Interaction</h4>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Creating immersive 3D environments and interactive elements using Three.js and React Three Fiber.
-              </p>
-            </div>
-            <div className="p-8 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 text-center group hover:bg-emerald-600/10 transition-all hover:-translate-y-2">
-              <h4 className="text-2xl font-bold text-white mb-4">Full-Stack</h4>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Building robust backends and seamless frontends that work together to deliver high-quality user experiences.
-              </p>
-            </div>
+            {featureCards.map((card, index) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{
+                  y: -8,
+                  scale: 1.02,
+                  transition: { type: "spring", stiffness: 280, damping: 20 },
+                }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                }}
+                className={`relative p-8 bg-slate-900/50 backdrop-blur-md rounded-3xl border border-white/5 text-center group ${card.hoverColor} hover:border-white/10 hover:shadow-xl ${card.shadowColor} transition-colors overflow-hidden`}
+              >
+                {/* TOP GLOW LINE */}
+                <div
+                  className={`absolute top-0 left-8 right-8 h-px bg-gradient-to-r ${card.glowColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                />
+
+                <h4 className="text-2xl font-bold text-white mb-4">
+                  {card.title}
+                </h4>
+                <p className="text-slate-400 text-sm">{card.text}</p>
+              </motion.div>
+            ))}
           </div>
+
         </div>
       </section>
     </PageTransition>
