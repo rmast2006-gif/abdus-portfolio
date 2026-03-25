@@ -1,80 +1,100 @@
-import { useState } from "react";
-import { LayoutGrid, Box } from "lucide-react";
-import { SectionHeader } from "../components/ui/SectionHeader.tsx";
-import { ProjectCard } from "../components/ui/ProjectCard.tsx";
-import ProjectsScene from "../components/3d/ProjectsScene";
-import { useProjects } from "../hooks/useProjects.ts";
+import { useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Text, Float, RoundedBox, Preload } from "@react-three/drei";
+import * as THREE from "three";
+import { Project } from "../../types.ts";
 
-export const Projects = () => {
-  const { projects, loading } = useProjects();
-  const [viewMode, setViewMode] = useState<"grid" | "3d">("grid");
+// 🔥 3D Card
+const ProjectCard3D = ({
+  project,
+  position,
+}: {
+  project: Project;
+  position: [number, number, number];
+}) => {
+  const ref = useRef<THREE.Group>(null);
+  const [hovered, setHovered] = useState(false);
 
-  // ✅ CLICK HANDLER
-  const handleProjectClick = (project: any) => {
-    if (project.liveLink) {
-      window.open(project.liveLink, "_blank");
-    } else if (project.githubLink) {
-      window.open(project.githubLink, "_blank");
-    }
-  };
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+    ref.current.rotation.y += delta * 0.25;
+  });
 
   return (
-    <section className="pt-32 pb-20 bg-slate-950 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6">
+    <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.4}>
+      <group
+        ref={ref}
+        position={position}
+        onClick={() => {
+          if (project.liveLink) {
+            window.open(project.liveLink, "_blank");
+          } else if (project.githubLink) {
+            window.open(project.githubLink, "_blank");
+          }
+        }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <RoundedBox args={[3, 2, 0.15]} radius={0.2}>
+          <meshStandardMaterial
+            color={hovered ? "#9333ea" : "#1e1b4b"}
+            metalness={0.5}
+            roughness={0.25}
+          />
+        </RoundedBox>
 
-        <SectionHeader title="Projects" subtitle="My work" />
-
-        {/* 🔥 VIEW TOGGLE BUTTONS */}
-        <div className="flex gap-4 mb-10">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              viewMode === "grid"
-                ? "bg-fuchsia-600 text-white"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            <LayoutGrid size={16} />
-            Grid View
-          </button>
-
-          <button
-            onClick={() => setViewMode("3d")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              viewMode === "3d"
-                ? "bg-fuchsia-600 text-white"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            <Box size={16} />
-            3D View
-          </button>
-        </div>
-
-        {loading ? (
-          <p className="text-white">Loading...</p>
-        ) : (
-          <>
-            {/* ✅ GRID VIEW */}
-            <div className={viewMode === "grid" ? "block" : "hidden"}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((p: any) => (
-                  <ProjectCard
-                    key={p._id}
-                    project={p}
-                    onClick={() => handleProjectClick(p)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* ✅ 3D VIEW (PRELOADED — NO DELAY) */}
-            <div className={viewMode === "3d" ? "block" : "hidden"}>
-              <ProjectsScene projects={projects} />
-            </div>
-          </>
-        )}
-      </div>
-    </section>
+        <Text
+          position={[0, 0, 0.2]}
+          fontSize={0.25}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+        >
+          {project.title}
+        </Text>
+      </group>
+    </Float>
   );
 };
+
+// 🔥 MAIN SCENE
+const ProjectsScene = ({ projects }: { projects: Project[] }) => {
+  const safeProjects = Array.isArray(projects) ? projects : [];
+  const radius = 6;
+
+  return (
+    <div className="h-[600px] w-full rounded-3xl overflow-hidden border border-white/5">
+      <Canvas
+        camera={{ position: [0, 2, 10], fov: 55 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: false }}
+      >
+        {/* Lighting */}
+        <ambientLight intensity={0.6} />
+        <pointLight position={[5, 5, 5]} intensity={1} />
+
+        {/* 🔥 Preload everything (KEY FIX) */}
+        <Preload all />
+
+        {/* Circular layout */}
+        {safeProjects.map((project, i) => {
+          const angle = (i / safeProjects.length) * Math.PI * 2;
+
+          return (
+            <ProjectCard3D
+              key={project._id}
+              project={project}
+              position={[
+                Math.cos(angle) * radius,
+                0,
+                Math.sin(angle) * radius,
+              ]}
+            />
+          );
+        })}
+      </Canvas>
+    </div>
+  );
+};
+
+export default ProjectsScene;
