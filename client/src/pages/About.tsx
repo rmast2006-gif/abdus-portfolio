@@ -28,9 +28,6 @@ export const About = () => {
           acc[item.section][item.key] = item.value;
           return acc;
         }, {});
-
-        console.log("FULL CONTENT:", transformed); // ✅ DEBUG
-
         setContent(transformed);
       } catch (error) {
         console.error("Error fetching about content:", error);
@@ -39,7 +36,6 @@ export const About = () => {
     fetchContent();
   }, []);
 
-  // ✅ FIX: SUPPORT ALL POSSIBLE IMAGE KEYS
   const bio = {
     name: content.bio?.name || "Abdus Samie Tahir",
     role: content.bio?.role || "Full Stack Developer",
@@ -57,10 +53,8 @@ export const About = () => {
       content.bio?.avatar ||
       content.bio?.image ||
       content.bio?.profileImage ||
-      "", // ✅ SUPER SAFE FIX
+      "",
   };
-
-  console.log("FINAL IMAGE:", bio.avatarImage); // ✅ DEBUG
 
   const stats = [
     {
@@ -112,6 +106,7 @@ export const About = () => {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
+            
             {/* LEFT SIDE */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -131,23 +126,23 @@ export const About = () => {
               >
                 <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30 relative">
 
-                  {/* ✅ IMAGE */}
-                  {bio.avatarImage ? (
-                    <img
-                      src={`${bio.avatarImage}?t=${Date.now()}`}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-full h-full text-white">
-                      No Image Found
-                    </div>
-                  )}
-
-                  {/* ✅ 3D OVERLAY */}
-                  <div className="absolute inset-0 pointer-events-none opacity-70 mix-blend-screen">
+                  {/* ✅ 3D BACKGROUND */}
+                  <div className="absolute inset-0 pointer-events-none opacity-80">
                     <AboutFloatingOrb />
                   </div>
+
+                  {/* ✅ IMAGE CENTER (FIXED) */}
+                  {bio.avatarImage && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white/20 shadow-xl backdrop-blur-md">
+                        <img
+                          src={`${bio.avatarImage}?t=${Date.now()}`}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
 
                 </div>
               </div>
@@ -182,6 +177,7 @@ export const About = () => {
                 </div>
               </div>
             </motion.div>
+
           </div>
 
           {/* STATS */}
@@ -199,6 +195,7 @@ export const About = () => {
               </div>
             ))}
           </div>
+
         </div>
       </section>
     </PageTransition>
