@@ -5,19 +5,15 @@ import Project from "../models/Project";
 // ✅ GET ALL PROJECTS
 export const getProjects = async (req: Request, res: Response) => {
   try {
-    // 🔥 DEBUG LOG (VERY IMPORTANT)
     console.log("🔥 ABDUS BACKEND V2 WORKING");
 
-    // ✅ Check DB connection
     if (mongoose.connection.readyState !== 1) {
       console.error("❌ Database not connected");
       return res.status(500).json({ message: "Database not connected" });
     }
 
-    // ✅ Fetch projects from DB
     const projects = await Project.find().sort({ createdAt: -1 });
 
-    // ✅ Return real data only (NO FALLBACK)
     return res.status(200).json(projects || []);
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
@@ -25,10 +21,17 @@ export const getProjects = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ CREATE PROJECT
+// ✅ CREATE PROJECT (FIXED 🔥)
 export const createProject = async (req: Request, res: Response) => {
   try {
-    const { title, description, image, liveLink, githubLink, tags } = req.body;
+    const { title, description, liveLink, githubLink, tags } = req.body;
+
+    // ✅ Handle uploaded file
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    }
 
     // ✅ Basic validation
     if (!title || !description) {
@@ -38,7 +41,7 @@ export const createProject = async (req: Request, res: Response) => {
     const project = await Project.create({
       title,
       description,
-      image,
+      image: imageUrl, // 🔥 FIXED
       liveLink,
       githubLink,
       tags,
@@ -51,21 +54,28 @@ export const createProject = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ UPDATE PROJECT
+// ✅ UPDATE PROJECT (FIXED 🔥)
 export const updateProject = async (req: Request, res: Response) => {
   try {
-    const project = await Project.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const project = await Project.findById(req.params.id);
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
+
+    // ✅ Update fields
+    project.title = req.body.title || project.title;
+    project.description = req.body.description || project.description;
+    project.liveLink = req.body.liveLink || project.liveLink;
+    project.githubLink = req.body.githubLink || project.githubLink;
+    project.tags = req.body.tags || project.tags;
+
+    // ✅ Handle new uploaded image
+    if (req.file) {
+      project.image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    }
+
+    await project.save();
 
     return res.status(200).json(project);
   } catch (error) {
