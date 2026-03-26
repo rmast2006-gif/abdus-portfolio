@@ -1,22 +1,26 @@
 import express from "express";
 import { upload } from "../middleware/uploadMiddleware";
-import { protect } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", protect, upload.single("file"), (req, res) => {
-  // ✅ FIXED: "image" → "file"
+// ✅ SINGLE FILE UPLOAD
+router.post("/", upload.single("file"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+    // ✅ VERY IMPORTANT: return FULL HTTPS URL (fixes mixed content)
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+    return res.status(200).json({
+      message: "Upload successful",
+      url: fileUrl,
+    });
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+    return res.status(500).json({ message: "Upload failed" });
   }
-
-  // ✅ keep your dynamic URL logic (GOOD)
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
-
-  res.json({
-    url: `${baseUrl}/uploads/${req.file.filename}`,
-  });
 });
 
 export default router;

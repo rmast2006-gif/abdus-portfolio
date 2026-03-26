@@ -17,26 +17,31 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
-// ✅ connect DB
+// ✅ CONNECT DATABASE
 connectDB();
 
-// ✅ CORS (THIS IS ENOUGH)
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://abdus-portfolio.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-}));
+// ✅ CORS CONFIG (FIXED FOR VERCEL + LOCAL)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://abdus-portfolio.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
+// ✅ BODY PARSING (IMPORTANT FOR FORMS)
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// ✅ TEST ROUTE
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend working 🚀" });
 });
 
-// ✅ ROUTES
+// ✅ API ROUTES
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminAuthRoutes);
@@ -44,13 +49,16 @@ app.use("/api/content", contentRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// ✅ FIXED STATIC PATH (IMPORTANT)
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// ✅ SERVE UPLOADED FILES (VERY IMPORTANT FIX)
+const uploadsPath = path.join(process.cwd(), "uploads");
+app.use("/uploads", express.static(uploadsPath));
 
+// ✅ ROOT ROUTE
 app.get("/", (req, res) => {
   res.send("API is running on Railway 🚀");
 });
 
+// ✅ GLOBAL ERROR HANDLER
 app.use(errorHandler);
 
 // ✅ PORT

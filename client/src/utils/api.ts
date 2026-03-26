@@ -20,27 +20,19 @@ authApi.interceptors.request.use((config) => {
 });
 
 // =======================
-// 🔥 PROJECTS (FIXED)
+// 🔥 PROJECTS (FINAL FIX)
 // =======================
 
 // GET
 export const apiGetProjects = () => api.get("/projects");
 
-// CREATE (FIXED for file upload)
+// CREATE ✅ (NO HEADERS)
 export const apiCreateProject = (formData: FormData) =>
-  authApi.post("/projects", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  authApi.post("/projects", formData);
 
-// UPDATE (FIXED for file upload)
+// UPDATE ✅ (NO HEADERS)
 export const apiUpdateProject = (id: string, formData: FormData) =>
-  authApi.put(`/projects/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  authApi.put(`/projects/${id}`, formData);
 
 // DELETE
 export const apiDeleteProject = (id: string) =>
@@ -66,7 +58,7 @@ export const apiUpdateContent = (data: any) =>
   authApi.put("/content", data);
 
 // =======================
-// UPLOAD (ALREADY OK)
+// UPLOAD (KEEP SAME)
 // =======================
 
 export const apiUploadImage = (formData: FormData) =>
