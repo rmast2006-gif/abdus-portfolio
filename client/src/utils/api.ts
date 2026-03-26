@@ -10,6 +10,7 @@ const authApi = axios.create({
   baseURL: BASE_URL,
 });
 
+// ✅ Attach token
 authApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("adminToken");
   if (token) {
@@ -18,40 +19,78 @@ authApi.interceptors.request.use((config) => {
   return config;
 });
 
-// Projects
+// =======================
+// 🔥 PROJECTS (FIXED)
+// =======================
+
+// GET
 export const apiGetProjects = () => api.get("/projects");
-export const apiCreateProject = (data: any) => authApi.post("/projects", data);
-export const apiUpdateProject = (id: string, data: any) =>
-  authApi.put(`/projects/${id}`, data);
+
+// CREATE (FIXED for file upload)
+export const apiCreateProject = (formData: FormData) =>
+  authApi.post("/projects", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+// UPDATE (FIXED for file upload)
+export const apiUpdateProject = (id: string, formData: FormData) =>
+  authApi.put(`/projects/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+// DELETE
 export const apiDeleteProject = (id: string) =>
   authApi.delete(`/projects/${id}`);
 
-// Contact
+// =======================
+// CONTACT
+// =======================
+
 export const sendContact = (data: any) => api.post("/contact", data);
 export const apiGetContacts = () => authApi.get("/contact");
 export const apiDeleteContact = (id: string) =>
   authApi.delete(`/contact/${id}`);
 
-// Content
+// =======================
+// CONTENT
+// =======================
+
 export const apiGetPageContent = (page: string) =>
   api.get(`/content/${page}`);
+
 export const apiUpdateContent = (data: any) =>
   authApi.put("/content", data);
 
-// Upload
-export const apiUploadImage = (formData: FormData) =>
-  authApi.post("/upload", formData); // ✅ FIXED: removed headers
+// =======================
+// UPLOAD (ALREADY OK)
+// =======================
 
-// Skills
+export const apiUploadImage = (formData: FormData) =>
+  authApi.post("/upload", formData);
+
+// =======================
+// SKILLS
+// =======================
+
 export const apiGetSkills = () => api.get("/skills");
+
 export const apiCreateSkill = (data: any) =>
   authApi.post("/skills", data);
+
 export const apiUpdateSkill = (id: string, data: any) =>
   authApi.put(`/skills/${id}`, data);
+
 export const apiDeleteSkill = (id: string) =>
   authApi.delete(`/skills/${id}`);
 
-// Auth
+// =======================
+// AUTH
+// =======================
+
 export const loginAdmin = (data: any) =>
   api.post("/admin/login", data);
 
