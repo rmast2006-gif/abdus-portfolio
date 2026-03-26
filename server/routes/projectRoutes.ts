@@ -5,21 +5,22 @@ import {
   updateProject,
   deleteProject,
 } from "../controllers/projectController";
+
 import { protect } from "../middleware/authMiddleware";
-import { upload } from "../middleware/uploadMiddleware"; // ✅ using your existing middleware
+import { upload } from "../middleware/uploadMiddleware"; // ✅ ADD THIS
 
 const router = express.Router();
 
-// GET ALL PROJECTS
+// GET
 router.get("/", getProjects);
 
-// CREATE PROJECT (WITH IMAGE UPLOAD)
-router.post("/", protect, upload.single("image"), createProject);
+// CREATE (✅ ADD upload middleware)
+router.post("/", protect, upload.single("file"), createProject);
 
-// UPDATE PROJECT (WITH IMAGE UPLOAD)
-router.put("/:id", protect, upload.single("image"), updateProject);
+// UPDATE (✅ ADD upload middleware)
+router.put("/:id", protect, upload.single("file"), updateProject);
 
-// DELETE PROJECT
+// DELETE
 router.delete("/:id", protect, deleteProject);
 
 export default router;

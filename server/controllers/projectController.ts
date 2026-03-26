@@ -22,26 +22,20 @@ export const getProjects = async (req: Request, res: Response) => {
 };
 
 // ✅ CREATE PROJECT (FIXED 🔥)
-export const createProject = async (req: Request, res: Response) => {
+export const createProject = async (req: any, res: Response) => {
   try {
     const { title, description, liveLink, githubLink, tags } = req.body;
 
-    // ✅ Handle uploaded file
-    let imageUrl = "";
-
+    // ✅ HANDLE FILE
+    let image = "";
     if (req.file) {
-      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    }
-
-    // ✅ Basic validation
-    if (!title || !description) {
-      return res.status(400).json({ message: "Title and description are required" });
+      image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     }
 
     const project = await Project.create({
       title,
       description,
-      image: imageUrl, // 🔥 FIXED
+      image,
       liveLink,
       githubLink,
       tags,
@@ -55,27 +49,27 @@ export const createProject = async (req: Request, res: Response) => {
 };
 
 // ✅ UPDATE PROJECT (FIXED 🔥)
-export const updateProject = async (req: Request, res: Response) => {
+export const updateProject = async (req: any, res: Response) => {
   try {
-    const project = await Project.findById(req.params.id);
+    let updateData = { ...req.body };
+
+    // ✅ HANDLE FILE
+    if (req.file) {
+      updateData.image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    }
+
+    const project = await Project.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-
-    // ✅ Update fields
-    project.title = req.body.title || project.title;
-    project.description = req.body.description || project.description;
-    project.liveLink = req.body.liveLink || project.liveLink;
-    project.githubLink = req.body.githubLink || project.githubLink;
-    project.tags = req.body.tags || project.tags;
-
-    // ✅ Handle new uploaded image
-    if (req.file) {
-      project.image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    }
-
-    await project.save();
 
     return res.status(200).json(project);
   } catch (error) {
