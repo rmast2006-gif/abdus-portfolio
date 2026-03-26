@@ -36,12 +36,21 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
           </button>
 
           <div className="flex flex-col md:flex-row">
+            
+            {/* ✅ FIXED IMAGE */}
             <div className="w-full md:w-1/2 h-64 md:h-auto overflow-hidden">
               <img
-                src={project.image}
+                src={
+                  project.image?.startsWith("http")
+                    ? project.image
+                    : `https://abdus-portfolio-production.up.railway.app${project.image}`
+                }
                 alt={project.title}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
+                onError={(e: any) => {
+                  e.target.src = "https://picsum.photos/seed/error/400/400";
+                }}
               />
             </div>
 
@@ -86,6 +95,7 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
                 </a>
               </div>
             </div>
+
           </div>
         </motion.div>
       </div>
