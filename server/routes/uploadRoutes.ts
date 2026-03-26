@@ -3,14 +3,13 @@ import { upload } from "../middleware/uploadMiddleware";
 
 const router = express.Router();
 
-// ✅ SINGLE FILE UPLOAD
-router.post("/", upload.single("file"), (req, res) => {
+// ✅ SINGLE FILE UPLOAD (FIXED)
+router.post("/", upload.single("image"), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // ✅ VERY IMPORTANT: return FULL HTTPS URL (fixes mixed content)
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
     return res.status(200).json({
