@@ -28,6 +28,9 @@ export const About = () => {
           acc[item.section][item.key] = item.value;
           return acc;
         }, {});
+
+        console.log("FULL CONTENT:", transformed); // ✅ DEBUG
+
         setContent(transformed);
       } catch (error) {
         console.error("Error fetching about content:", error);
@@ -36,6 +39,7 @@ export const About = () => {
     fetchContent();
   }, []);
 
+  // ✅ FIX: SUPPORT ALL POSSIBLE IMAGE KEYS
   const bio = {
     name: content.bio?.name || "Abdus Samie Tahir",
     role: content.bio?.role || "Full Stack Developer",
@@ -48,8 +52,15 @@ export const About = () => {
     paragraph3:
       content.bio?.paragraph3 ||
       "I believe that code is a creative tool...",
-    avatarImage: content.bio?.avatarImage || "",
+    avatarImage:
+      content.bio?.avatarImage ||
+      content.bio?.avatar ||
+      content.bio?.image ||
+      content.bio?.profileImage ||
+      "", // ✅ SUPER SAFE FIX
   };
+
+  console.log("FINAL IMAGE:", bio.avatarImage); // ✅ DEBUG
 
   const stats = [
     {
@@ -101,7 +112,7 @@ export const About = () => {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
-            {/* LEFT SIDE (AVATAR) */}
+            {/* LEFT SIDE */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -119,14 +130,18 @@ export const About = () => {
                 className="relative transition-all duration-500"
               >
                 <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30 relative">
-                  
-                  {/* ✅ IMAGE (BASE) */}
-                  {bio.avatarImage && (
+
+                  {/* ✅ IMAGE */}
+                  {bio.avatarImage ? (
                     <img
                       src={`${bio.avatarImage}?t=${Date.now()}`}
                       alt="Avatar"
                       className="w-full h-full object-cover"
                     />
+                  ) : (
+                    <div className="flex items-center justify-center w-full h-full text-white">
+                      No Image Found
+                    </div>
                   )}
 
                   {/* ✅ 3D OVERLAY */}
@@ -138,7 +153,7 @@ export const About = () => {
               </div>
             </motion.div>
 
-            {/* RIGHT SIDE (TEXT) */}
+            {/* RIGHT SIDE */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -151,15 +166,9 @@ export const About = () => {
                 <span className="text-gradient">technology</span>.
               </h3>
 
-              <p className="text-lg text-slate-400 mb-6">
-                {bio.paragraph1}
-              </p>
-              <p className="text-lg text-slate-400 mb-6">
-                {bio.paragraph2}
-              </p>
-              <p className="text-lg text-slate-400 mb-12">
-                {bio.paragraph3}
-              </p>
+              <p className="text-lg text-slate-400 mb-6">{bio.paragraph1}</p>
+              <p className="text-lg text-slate-400 mb-6">{bio.paragraph2}</p>
+              <p className="text-lg text-slate-400 mb-12">{bio.paragraph3}</p>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-slate-900/50 rounded-2xl border border-white/5">
@@ -182,9 +191,7 @@ export const About = () => {
                 key={stat.label}
                 className="p-8 bg-slate-900/30 rounded-3xl text-center"
               >
-                <div className="flex justify-center mb-4">
-                  {stat.icon}
-                </div>
+                <div className="flex justify-center mb-4">{stat.icon}</div>
                 <h4 className="text-4xl font-bold text-white">
                   {stat.value}
                 </h4>
