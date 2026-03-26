@@ -4,7 +4,7 @@ import { SectionHeader } from "../components/ui/SectionHeader.tsx";
 import { PageTransition } from "../components/ui/PageTransition.tsx";
 import { User, Code, Palette, Terminal, Globe, Award } from "lucide-react";
 import { apiGetPageContent } from "../utils/api.ts";
-import { AboutFloatingOrb } from "../components/3d/AboutFloatingOrb.tsx";
+// ❌ REMOVED: AboutFloatingOrb import
 
 export const About = () => {
   const [content, setContent] = useState<any>({});
@@ -124,24 +124,18 @@ export const About = () => {
                 onMouseLeave={handleMouseLeave}
                 className="relative transition-all duration-500"
               >
-                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30 relative">
+                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30 relative flex items-center justify-center">
 
-                  {/* ✅ 3D BACKGROUND */}
-                  <div className="absolute inset-0 pointer-events-none opacity-80">
-                    <AboutFloatingOrb />
-                  </div>
-
-                  {/* ✅ FIXED IMAGE (PERFECTLY FIT INSIDE ORB) */}
+                  {/* ✅ CLEAN AVATAR (NO ORB) */}
                   {bio.avatarImage && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                      <div className="w-[72%] h-[72%] rounded-full overflow-hidden flex items-center justify-center
-                                      shadow-[0_0_60px_rgba(0,255,150,0.25)]">
-                        <img
-                          src={`${bio.avatarImage}?t=${Date.now()}`}
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                    <div className="w-[65%] h-[65%] rounded-2xl overflow-hidden
+                                    shadow-2xl shadow-green-900/40
+                                    ring-1 ring-white/10 backdrop-blur-sm">
+                      <img
+                        src={`${bio.avatarImage}?t=${Date.now()}`}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
 
