@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { SectionHeader } from "../components/ui/SectionHeader.tsx";
 import { PageTransition } from "../components/ui/PageTransition.tsx";
-import { User, Code, Palette, Terminal, Globe, Award, Briefcase } from "lucide-react";
+import { User, Code, Palette, Terminal, Globe, Award } from "lucide-react";
 import { apiGetPageContent } from "../utils/api.ts";
 import { AboutFloatingOrb } from "../components/3d/AboutFloatingOrb.tsx";
 
@@ -39,31 +39,39 @@ export const About = () => {
   const bio = {
     name: content.bio?.name || "Abdus Samie Tahir",
     role: content.bio?.role || "Full Stack Developer",
-    paragraph1: content.bio?.paragraph1 || "With over 5 years of experience in the industry...",
-    paragraph2: content.bio?.paragraph2 || "My expertise lies in React, Three.js...",
-    paragraph3: content.bio?.paragraph3 || "I believe that code is a creative tool...",
-  };
-
-  const timeline = {
-    job1_year: content.timeline?.job1_year || "2023 - Present",
-    job1_role: content.timeline?.job1_role || "Senior Developer",
-    job1_place: content.timeline?.job1_place || "Tech Solutions",
-    job1_desc: content.timeline?.job1_desc || "Leading frontend development...",
-    job2_year: content.timeline?.job2_year || "2021 - 2023",
-    job2_role: content.timeline?.job2_role || "Full Stack Developer",
-    job2_place: content.timeline?.job2_place || "Creative Agency",
-    job2_desc: content.timeline?.job2_desc || "Built interactive 3D experiences...",
-    job3_year: content.timeline?.job3_year || "2019 - 2021",
-    job3_role: content.timeline?.job3_role || "Junior Developer",
-    job3_place: content.timeline?.job3_place || "Startup Hub",
-    job3_desc: content.timeline?.job3_desc || "Developed responsive UI...",
+    paragraph1:
+      content.bio?.paragraph1 ||
+      "With over 5 years of experience in the industry...",
+    paragraph2:
+      content.bio?.paragraph2 ||
+      "My expertise lies in React, Three.js...",
+    paragraph3:
+      content.bio?.paragraph3 ||
+      "I believe that code is a creative tool...",
+    avatarImage: content.bio?.avatarImage || "",
   };
 
   const stats = [
-    { label: "Years Experience", value: "5+", icon: <Award className="text-green-400" size={32} /> },
-    { label: "Projects Completed", value: "50+", icon: <Code className="text-green-500" size={32} /> },
-    { label: "Happy Clients", value: "30+", icon: <User className="text-green-300" size={32} /> },
-    { label: "Countries Served", value: "10+", icon: <Globe className="text-green-600" size={32} /> },
+    {
+      label: "Years Experience",
+      value: "5+",
+      icon: <Award className="text-green-400" size={32} />,
+    },
+    {
+      label: "Projects Completed",
+      value: "50+",
+      icon: <Code className="text-green-500" size={32} />,
+    },
+    {
+      label: "Happy Clients",
+      value: "30+",
+      icon: <User className="text-green-300" size={32} />,
+    },
+    {
+      label: "Countries Served",
+      value: "10+",
+      icon: <Globe className="text-green-600" size={32} />,
+    },
   ];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -71,29 +79,29 @@ export const About = () => {
     const rect = avatarRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * -14;
-    avatarRef.current.style.transform =
-      `perspective(800px) rotateY(${x}deg) rotateX(${y}deg) scale(1.02)`;
+    avatarRef.current.style.transform = `perspective(800px) rotateY(${x}deg) rotateX(${y}deg) scale(1.02)`;
   };
 
   const handleMouseLeave = () => {
     if (!avatarRef.current) return;
     avatarRef.current.style.transform =
-      `perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)`;
+      "perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)";
   };
 
   return (
     <PageTransition>
-      <section ref={sectionRef} className="pt-32 pb-20 bg-[#021a12] relative overflow-hidden">
-
+      <section
+        ref={sectionRef}
+        className="pt-32 pb-20 bg-[#021a12] relative overflow-hidden"
+      >
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-
           <SectionHeader
             title="About Me"
             subtitle={`I'm ${bio.name}, a ${bio.role} dedicated to building high-quality digital experiences.`}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
-
+            {/* LEFT SIDE (AVATAR) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -110,12 +118,27 @@ export const About = () => {
                 onMouseLeave={handleMouseLeave}
                 className="relative transition-all duration-500"
               >
-                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30">
-                  <AboutFloatingOrb />
+                <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-green-900/30 relative">
+                  
+                  {/* ✅ IMAGE (BASE) */}
+                  {bio.avatarImage && (
+                    <img
+                      src={`${bio.avatarImage}?t=${Date.now()}`}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+
+                  {/* ✅ 3D OVERLAY */}
+                  <div className="absolute inset-0 pointer-events-none opacity-70 mix-blend-screen">
+                    <AboutFloatingOrb />
+                  </div>
+
                 </div>
               </div>
             </motion.div>
 
+            {/* RIGHT SIDE (TEXT) */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -123,12 +146,20 @@ export const About = () => {
               transition={{ duration: 0.8 }}
             >
               <h3 className="text-3xl font-bold text-white mb-6">
-                I bridge the gap between <span className="text-gradient">design</span> and <span className="text-gradient">technology</span>.
+                I bridge the gap between{" "}
+                <span className="text-gradient">design</span> and{" "}
+                <span className="text-gradient">technology</span>.
               </h3>
 
-              <p className="text-lg text-slate-400 mb-6">{bio.paragraph1}</p>
-              <p className="text-lg text-slate-400 mb-6">{bio.paragraph2}</p>
-              <p className="text-lg text-slate-400 mb-12">{bio.paragraph3}</p>
+              <p className="text-lg text-slate-400 mb-6">
+                {bio.paragraph1}
+              </p>
+              <p className="text-lg text-slate-400 mb-6">
+                {bio.paragraph2}
+              </p>
+              <p className="text-lg text-slate-400 mb-12">
+                {bio.paragraph3}
+              </p>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-slate-900/50 rounded-2xl border border-white/5">
@@ -142,19 +173,25 @@ export const About = () => {
                 </div>
               </div>
             </motion.div>
-
           </div>
 
+          {/* STATS */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
-              <div key={stat.label} className="p-8 bg-slate-900/30 rounded-3xl text-center">
-                <div className="flex justify-center mb-4">{stat.icon}</div>
-                <h4 className="text-4xl font-bold text-white">{stat.value}</h4>
+              <div
+                key={stat.label}
+                className="p-8 bg-slate-900/30 rounded-3xl text-center"
+              >
+                <div className="flex justify-center mb-4">
+                  {stat.icon}
+                </div>
+                <h4 className="text-4xl font-bold text-white">
+                  {stat.value}
+                </h4>
                 <p className="text-slate-500 text-sm">{stat.label}</p>
               </div>
             ))}
           </div>
-
         </div>
       </section>
     </PageTransition>
