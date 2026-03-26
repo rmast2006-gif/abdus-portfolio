@@ -131,10 +131,11 @@ export const About = () => {
                     <AboutFloatingOrb />
                   </div>
 
-                  {/* ✅ IMAGE CENTER (FIXED) */}
+                  {/* ✅ FIXED IMAGE (PERFECTLY FIT INSIDE ORB) */}
                   {bio.avatarImage && (
                     <div className="absolute inset-0 flex items-center justify-center z-10">
-                      <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white/20 shadow-xl backdrop-blur-md">
+                      <div className="w-[72%] h-[72%] rounded-full overflow-hidden flex items-center justify-center
+                                      shadow-[0_0_60px_rgba(0,255,150,0.25)]">
                         <img
                           src={`${bio.avatarImage}?t=${Date.now()}`}
                           alt="Avatar"
