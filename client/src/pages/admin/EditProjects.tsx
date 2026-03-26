@@ -84,42 +84,47 @@ const EditProjects = () => {
     setEditingProject(null);
   };
 
-  // ✅ FULL SAVE FUNCTION
+  // ✅ FULL SAVE FUNCTION (FIXED)
   const handleSaveProject = async () => {
     setSaving(true);
 
     try {
-      const payload = {
-        title: editingProject.title || "",
-        description: editingProject.description || "",
-        image: editingProject.image || "",
-        githubLink: editingProject.githubLink || "",
-        liveLink: editingProject.liveLink || "",
+      // ✅ CREATE FORMDATA
+      const formData = new FormData();
 
-        tags: [
-          ...(editingProject.languages
-            ? editingProject.languages
-                .split(",")
-                .map((t: string) => t.trim())
-                .filter((t: string) => t !== "")
-            : []),
+      formData.append("title", editingProject.title || "");
+      formData.append("description", editingProject.description || "");
+      formData.append("image", editingProject.image || "");
+      formData.append("githubLink", editingProject.githubLink || "");
+      formData.append("liveLink", editingProject.liveLink || "");
 
-          ...(editingProject.stack
-            ? editingProject.stack
-                .split(",")
-                .map((t: string) => t.trim())
-                .filter((t: string) => t !== "")
-            : []),
-        ],
-      };
+      // ✅ TAGS FIX
+      const tags = [
+        ...(editingProject.languages
+          ? editingProject.languages
+              .split(",")
+              .map((t: string) => t.trim())
+              .filter((t: string) => t !== "")
+          : []),
 
-      console.log("🚀 Sending:", payload);
+        ...(editingProject.stack
+          ? editingProject.stack
+              .split(",")
+              .map((t: string) => t.trim())
+              .filter((t: string) => t !== "")
+          : []),
+      ];
 
+      formData.append("tags", JSON.stringify(tags));
+
+      console.log("🚀 Sending FormData...");
+
+      // ✅ UPDATE / CREATE
       if (editingProject._id) {
-        await apiUpdateProject(editingProject._id, payload);
+        await apiUpdateProject(editingProject._id, formData);
         await fetchProjects();
       } else {
-        const res = await apiCreateProject(payload);
+        const res = await apiCreateProject(formData);
         setProjects((prev) => [res.data, ...prev]);
       }
 
@@ -246,9 +251,10 @@ const EditProjects = () => {
                 className="w-full mb-3 p-2 rounded bg-white/10 text-white"
               />
 
+              {/* ✅ FIXED IMAGE UPLOAD */}
               <ImageUpload
-                value={editingProject.image}
-                onChange={(url: string) =>
+                currentImage={editingProject.image}
+                onUploadSuccess={(url: string) =>
                   setEditingProject({ ...editingProject, image: url })
                 }
               />
