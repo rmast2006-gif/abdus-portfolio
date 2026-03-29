@@ -6,6 +6,9 @@ import { HeroScene } from "../components/3d/HeroScene.tsx";
 import { PageTransition } from "../components/ui/PageTransition.tsx";
 import { apiGetPageContent } from "../utils/api.ts";
 
+// ✅ NEW IMPORT (ADDED — NOTHING REMOVED)
+import FlipCard from "../components/ui/FlipCard";
+
 // ─────────────────────────────────────────────
 // Home Page — FULL VERSION (NO REDUCTION)
 // ─────────────────────────────────────────────
@@ -64,6 +67,10 @@ export const Home = () => {
   // ───────────────── IMAGE FROM ADMIN ─────────────────
   const imageUrl = content.hero?.hero_image;
 
+  // ✅ NEW: FRONT & BACK IMAGE SUPPORT (ADMIN READY)
+  const frontImage = content.hero?.front_image || imageUrl;
+  const backImage = content.hero?.back_image || imageUrl;
+
   // ───────────────── RENDER ─────────────────
   return (
     <PageTransition>
@@ -107,7 +114,6 @@ export const Home = () => {
               >
                 <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-[1.05] tracking-tight">
 
-                  {/* 🔥 TEXT GLOW LAYER */}
                   <span className="absolute blur-2xl opacity-20 text-green-400">
                     {hero.heading}
                   </span>
@@ -139,7 +145,6 @@ export const Home = () => {
                 className="flex flex-col sm:flex-row gap-6"
               >
 
-                {/* PRIMARY BUTTON */}
                 <Link
                   to="/projects"
                   className="group relative flex items-center justify-center gap-3 px-8 py-4 btn-premium rounded-full text-lg font-bold overflow-hidden"
@@ -149,11 +154,9 @@ export const Home = () => {
                     <ArrowRight size={20} />
                   </span>
 
-                  {/* 🔥 SHINE EFFECT */}
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 </Link>
 
-                {/* SECONDARY BUTTON */}
                 <Link
                   to="/contact"
                   className="relative flex items-center justify-center gap-3 px-8 py-4 bg-slate-900/80 backdrop-blur-xl text-white text-lg font-bold rounded-full border border-green-500/10 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all overflow-hidden"
@@ -198,14 +201,18 @@ export const Home = () => {
             {/* RIGHT SIDE — 3D IMAGE HOLDER */}
             <div className="relative w-full h-[550px] flex items-center justify-center">
 
-              {/* EXTRA GLOW BEHIND 3D */}
               <div className="absolute w-[400px] h-[400px] bg-green-500/20 blur-[120px] rounded-full" />
 
-              {/* WRAPPER FOR ALIGNMENT */}
-              <div className="w-full h-full max-w-[500px] flex items-center justify-center">
+              <div className="w-full h-full max-w-[500px] flex items-center justify-center flex-col gap-8">
 
-                {/* 3D HOLDER */}
+                {/* EXISTING 3D — UNTOUCHED */}
                 <HeroScene imageUrl={imageUrl} />
+
+                {/* ✅ NEW FLIP CARD (ADMIN CONTROLLED) */}
+                <FlipCard
+                  frontImage={frontImage}
+                  backImage={backImage}
+                />
 
               </div>
 

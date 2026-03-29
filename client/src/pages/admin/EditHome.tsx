@@ -60,8 +60,8 @@ const EditHome = () => {
     }));
   };
 
-  // UPLOAD HANDLER
-  const handleFileUpload = async (file: File) => {
+  // UPLOAD HANDLER (EXTENDED)
+  const handleFileUpload = async (file: File, type: "hero" | "front" | "back" = "hero") => {
     try {
       setUploading(true);
 
@@ -81,7 +81,17 @@ const EditHome = () => {
 
       if (!data.secure_url) throw new Error("Upload failed");
 
-      handleChange("hero", "hero_image", data.secure_url);
+      if (type === "hero") {
+        handleChange("hero", "hero_image", data.secure_url);
+      }
+
+      if (type === "front") {
+        handleChange("hero", "front_image", data.secure_url);
+      }
+
+      if (type === "back") {
+        handleChange("hero", "back_image", data.secure_url);
+      }
 
     } catch (error) {
       alert("Upload failed");
@@ -153,64 +163,142 @@ const EditHome = () => {
         </div>
 
         {/* HERO SECTION */}
-        <div className="bg-white/5 p-8 rounded-2xl border border-white/10 space-y-6">
+        <div className="bg-white/5 p-8 rounded-2xl border border-white/10 space-y-10">
 
           <h2 className="text-xl text-white font-bold">Hero Section</h2>
 
-          <input
-            type="text"
-            placeholder="Heading"
-            value={content.hero?.heading || ""}
-            onChange={(e) => handleChange("hero", "heading", e.target.value)}
-            className="input"
-          />
+          {/* TEXT SECTION */}
+          <div className="space-y-6">
 
-          <input
-            type="text"
-            placeholder="Subheading"
-            value={content.hero?.subheading || ""}
-            onChange={(e) => handleChange("hero", "subheading", e.target.value)}
-            className="input"
-          />
-
-          <textarea
-            rows={4}
-            placeholder="Bio"
-            value={content.hero?.bio || ""}
-            onChange={(e) => handleChange("hero", "bio", e.target.value)}
-            className="input"
-          />
-
-          {/* IMAGE UPLOAD */}
-          <div>
-            <p className="text-slate-400 mb-2">Hero Image (3D Holder)</p>
-
-            <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file) handleFileUpload(file);
-              }}
-              className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
-            >
-              {uploading ? "Uploading..." : "Drag & Drop Image Here"}
-            </div>
+            <h3 className="text-white font-semibold">Text Content</h3>
 
             <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  handleFileUpload(e.target.files[0]);
-                }
-              }}
-              className="mt-4 text-white"
+              type="text"
+              placeholder="Heading"
+              value={content.hero?.heading || ""}
+              onChange={(e) => handleChange("hero", "heading", e.target.value)}
+              className="input"
             />
 
-            {content.hero?.hero_image && (
-              <p className="text-green-400 mt-2">Image uploaded ✔</p>
-            )}
+            <input
+              type="text"
+              placeholder="Subheading"
+              value={content.hero?.subheading || ""}
+              onChange={(e) => handleChange("hero", "subheading", e.target.value)}
+              className="input"
+            />
+
+            <textarea
+              rows={4}
+              placeholder="Bio"
+              value={content.hero?.bio || ""}
+              onChange={(e) => handleChange("hero", "bio", e.target.value)}
+              className="input"
+            />
+
+          </div>
+
+          {/* IMAGE SECTION */}
+          <div className="space-y-6">
+
+            <h3 className="text-white font-semibold">Images</h3>
+
+            {/* HERO IMAGE */}
+            <div>
+              <p className="text-slate-400 mb-2">Hero Image (3D)</p>
+
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFileUpload(file, "hero");
+                }}
+                className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
+              >
+                {uploading ? "Uploading..." : "Drag & Drop Image"}
+              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileUpload(e.target.files[0], "hero");
+                  }
+                }}
+                className="mt-4 text-white"
+              />
+
+              {content.hero?.hero_image && (
+                <p className="text-green-400 mt-2">Hero Image uploaded ✔</p>
+              )}
+            </div>
+
+            {/* FRONT IMAGE */}
+            <div>
+              <p className="text-slate-400 mb-2">Front Image (Flip Card)</p>
+
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFileUpload(file, "front");
+                }}
+                className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-green-500 cursor-pointer"
+              >
+                {uploading ? "Uploading..." : "Drag & Drop Front Image"}
+              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileUpload(e.target.files[0], "front");
+                  }
+                }}
+                className="mt-4 text-white"
+              />
+
+              {content.hero?.front_image && (
+                <p className="text-green-400 mt-2">Front Image uploaded ✔</p>
+              )}
+            </div>
+
+            {/* BACK IMAGE */}
+            <div>
+              <p className="text-slate-400 mb-2">Back Image (Flip Card)</p>
+
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFileUpload(file, "back");
+                }}
+                className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-green-500 cursor-pointer"
+              >
+                {uploading ? "Uploading..." : "Drag & Drop Back Image"}
+              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileUpload(e.target.files[0], "back");
+                  }
+                }}
+                className="mt-4 text-white"
+              />
+
+              {content.hero?.back_image && (
+                <p className="text-green-400 mt-2">Back Image uploaded ✔</p>
+              )}
+            </div>
+
           </div>
 
         </div>
