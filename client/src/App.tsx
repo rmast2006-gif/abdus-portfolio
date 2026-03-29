@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { useEffect, Suspense, lazy } from "react";
+import { useEffect, Suspense, lazy, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { Navbar } from "./components/layout/Navbar.tsx";
 import { Footer } from "./components/layout/Footer.tsx";
@@ -13,6 +13,7 @@ import { useScrollProgress } from "./hooks/useScrollProgress.ts";
 import { motion } from "motion/react";
 import { PageTransition } from "./components/ui/PageTransition.tsx";
 import ProtectedRoute from "./components/ui/ProtectedRoute.tsx";
+import Loader from "./components/ui/Loader.tsx";
 
 // Lazy load admin pages
 const AdminLogin = lazy(() => import("./pages/AdminLogin.tsx"));
@@ -262,9 +263,17 @@ const AppContent = () => {
 };
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <>
+      {loading && <Loader onComplete={() => setLoading(false)} />}
+
+      {!loading && (
+        <Router>
+          <AppContent />
+        </Router>
+      )}
+    </>
   );
 }
