@@ -32,12 +32,14 @@ const AppContent = () => {
   const scrollProgress = useScrollProgress();
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  // ✅ NEW: controls ONLY first transition after loader
+  const [showInitialTransition, setShowInitialTransition] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsFirstLoad(false);
-    }, 2000); // match loader duration
+      setShowInitialTransition(false);
+    }, 900); // match transition duration
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -77,7 +79,7 @@ const AppContent = () => {
   }, [isAdminPage]);
 
   const renderWithTransition = (Component: ReactNode) => {
-    return isFirstLoad ? Component : <PageTransition>{Component}</PageTransition>;
+    return <PageTransition>{Component}</PageTransition>;
   };
 
   return (
@@ -123,7 +125,8 @@ const AppContent = () => {
       {/* MAIN CONTENT WRAPPER */}
       <div className="w-full min-h-screen relative">
 
-        <AnimatePresence mode="wait">
+        {/* ✅ FIXED: prevent initial double animation */}
+        <AnimatePresence mode="wait" initial={false}>
           <Suspense
             fallback={
               <div className="h-screen w-full flex items-center justify-center bg-[#021a12]">
@@ -141,7 +144,8 @@ const AppContent = () => {
               </div>
             }
           >
-            <Routes location={location} key={location.pathname}>
+            {/* ✅ KEY FIX HERE */}
+            <Routes location={location} key={showInitialTransition ? "initial" : location.pathname}>
 
               <Route path="/" element={renderWithTransition(<Home />)} />
 
