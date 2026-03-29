@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect, Suspense, lazy, useState } from "react";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence } from "framer-motion";
 import { Navbar } from "./components/layout/Navbar.tsx";
 import { Footer } from "./components/layout/Footer.tsx";
 import { Home } from "./pages/Home.tsx";
@@ -11,7 +11,7 @@ import { Skills } from "./pages/Skills.tsx";
 import { Contact } from "./pages/Contact.tsx";
 import { Cursor } from "./components/ui/Cursor.tsx";
 import { useScrollProgress } from "./hooks/useScrollProgress.ts";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { PageTransition } from "./components/ui/PageTransition.tsx";
 import ProtectedRoute from "./components/ui/ProtectedRoute.tsx";
 import Loader from "./components/ui/Loader.tsx";
@@ -31,17 +31,6 @@ const AppContent = () => {
   const location = useLocation();
   const scrollProgress = useScrollProgress();
   const isAdminPage = location.pathname.startsWith("/admin");
-
-  // ✅ NEW: controls ONLY first transition after loader
-  const [showInitialTransition, setShowInitialTransition] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowInitialTransition(false);
-    }, 900); // match transition duration
-
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -125,8 +114,8 @@ const AppContent = () => {
       {/* MAIN CONTENT WRAPPER */}
       <div className="w-full min-h-screen relative">
 
-        {/* ✅ FIXED: prevent initial double animation */}
-        <AnimatePresence mode="wait" initial={false}>
+        {/* ✅ KEY: enable first transition + route transitions */}
+        <AnimatePresence mode="wait">
           <Suspense
             fallback={
               <div className="h-screen w-full flex items-center justify-center bg-[#021a12]">
@@ -144,8 +133,8 @@ const AppContent = () => {
               </div>
             }
           >
-            {/* ✅ KEY FIX HERE */}
-            <Routes location={location} key={showInitialTransition ? "initial" : location.pathname}>
+            {/* ✅ IMPORTANT: keep this EXACT */}
+            <Routes location={location} key={location.pathname}>
 
               <Route path="/" element={renderWithTransition(<Home />)} />
 
