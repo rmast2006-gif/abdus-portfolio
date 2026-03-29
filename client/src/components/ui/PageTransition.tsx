@@ -47,58 +47,6 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
         }}
       />
 
-      {/* 🔥 FIXED LOGO SYSTEM (THIS WAS THE BUG) */}
-      <motion.div
-        className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        exit={{ opacity: 1 }}
-        transition={{
-          duration: 0.4,
-          delay: 0.6, // disappear after merge
-        }}
-      >
-
-        {/* TOP HALF */}
-        <motion.div
-          className="absolute w-28 md:w-36 overflow-hidden"
-          style={{ clipPath: "inset(0 0 50% 0)" }}
-          initial={{ y: "-120vh", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "-120vh", opacity: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.76, 0, 0.24, 1],
-          }}
-        >
-          <img src="/logo.png" className="w-full" />
-        </motion.div>
-
-        {/* BOTTOM HALF */}
-        <motion.div
-          className="absolute w-28 md:w-36 overflow-hidden"
-          style={{ clipPath: "inset(50% 0 0 0)" }}
-          initial={{ y: "120vh", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "120vh", opacity: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.76, 0, 0.24, 1],
-          }}
-        >
-          <img src="/logo.png" className="w-full" />
-        </motion.div>
-
-        {/* 🔥 MERGE GLOW */}
-        <motion.div
-          className="absolute w-40 h-40 bg-green-500/30 blur-3xl rounded-full"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          transition={{ duration: 0.6 }}
-        />
-      </motion.div>
-
       {/* 🔥 TOP LIGHT SWEEP EFFECT */}
       <motion.div
         className="fixed inset-0 z-[9996] pointer-events-none bg-gradient-to-b from-white/10 via-transparent to-transparent"
