@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect, Suspense, lazy, useState } from "react";
 import { AnimatePresence } from "motion/react";
@@ -30,6 +31,15 @@ const AppContent = () => {
   const location = useLocation();
   const scrollProgress = useScrollProgress();
   const isAdminPage = location.pathname.startsWith("/admin");
+
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsFirstLoad(false);
+    }, 2000); // match loader duration
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,6 +75,10 @@ const AppContent = () => {
       };
     }
   }, [isAdminPage]);
+
+  const renderWithTransition = (Component: ReactNode) => {
+    return isFirstLoad ? Component : <PageTransition>{Component}</PageTransition>;
+  };
 
   return (
     <div className="relative bg-[#021a12] min-h-screen w-full overflow-x-hidden text-slate-200 selection:bg-green-500/30 selection:text-green-200">
@@ -109,7 +123,7 @@ const AppContent = () => {
       {/* MAIN CONTENT WRAPPER */}
       <div className="w-full min-h-screen relative">
 
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait">
           <Suspense
             fallback={
               <div className="h-screen w-full flex items-center justify-center bg-[#021a12]">
@@ -129,50 +143,15 @@ const AppContent = () => {
           >
             <Routes location={location} key={location.pathname}>
 
-              <Route
-                path="/"
-                element={
-                  <PageTransition>
-                    <Home />
-                  </PageTransition>
-                }
-              />
+              <Route path="/" element={renderWithTransition(<Home />)} />
 
-              <Route
-                path="/about"
-                element={
-                  <PageTransition>
-                    <About />
-                  </PageTransition>
-                }
-              />
+              <Route path="/about" element={renderWithTransition(<About />)} />
 
-              <Route
-                path="/projects"
-                element={
-                  <PageTransition>
-                    <Projects />
-                  </PageTransition>
-                }
-              />
+              <Route path="/projects" element={renderWithTransition(<Projects />)} />
 
-              <Route
-                path="/skills"
-                element={
-                  <PageTransition>
-                    <Skills />
-                  </PageTransition>
-                }
-              />
+              <Route path="/skills" element={renderWithTransition(<Skills />)} />
 
-              <Route
-                path="/contact"
-                element={
-                  <PageTransition>
-                    <Contact />
-                  </PageTransition>
-                }
-              />
+              <Route path="/contact" element={renderWithTransition(<Contact />)} />
 
               {/* Admin Routes */}
               <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

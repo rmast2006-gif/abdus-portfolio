@@ -11,10 +11,10 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
 
       {/* 🔥 DIAGONAL DARK CURTAIN (TOP) */}
       <motion.div
-        className="fixed inset-0 bg-[#021a12] z-[9999]"
-        initial={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
-        animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 60%)" }}
-        exit={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
+        className="fixed inset-0 bg-[#021a12] z-[9999] pointer-events-none"
+        initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 60%)" }}
+        animate={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
+        exit={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 60%)" }}
         transition={{
           duration: 0.9,
           ease: [0.76, 0, 0.24, 1],
@@ -23,10 +23,10 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
 
       {/* 🔥 DIAGONAL GREEN CURTAIN (BOTTOM) */}
       <motion.div
-        className="fixed inset-0 bg-gradient-to-tr from-green-600 via-emerald-500 to-green-400 z-[9998]"
-        initial={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" }}
-        animate={{ clipPath: "polygon(0 60%, 100% 0, 100% 100%, 0 100%)" }}
-        exit={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" }}
+        className="fixed inset-0 bg-gradient-to-tr from-green-600 via-emerald-500 to-green-400 z-[9998] pointer-events-none"
+        initial={{ clipPath: "polygon(0 60%, 100% 0, 100% 100%, 0 100%)" }}
+        animate={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" }}
+        exit={{ clipPath: "polygon(0 60%, 100% 0, 100% 100%, 0 100%)" }}
         transition={{
           duration: 0.9,
           ease: [0.76, 0, 0.24, 1],
@@ -36,7 +36,7 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
 
       {/* 🔥 SOFT GLOW LAYER */}
       <motion.div
-        className="fixed inset-0 bg-green-500/20 backdrop-blur-2xl z-[9997]"
+        className="fixed inset-0 bg-green-500/20 backdrop-blur-2xl z-[9997] pointer-events-none"
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         exit={{ opacity: 1 }}
