@@ -60,7 +60,7 @@ const EditHome = () => {
     }));
   };
 
-  // ✅ FIXED UPLOAD HANDLER (NO CLOUDINARY)
+  // ✅ FIXED UPLOAD HANDLER (ROBUST + BACKEND SAFE)
   const handleFileUpload = async (
     file: File,
     type: "hero" | "front" | "back" = "hero"
@@ -71,33 +71,48 @@ const EditHome = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      // ✅ USE YOUR EXISTING BACKEND
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
+      // ❗ HANDLE SERVER ERRORS (THIS WAS YOUR MAIN ISSUE)
+      if (!res.ok) {
+        const text = await res.text(); // prevent JSON crash
+        console.error("Upload failed response:", text);
+        throw new Error(`Upload failed (${res.status})`);
+      }
+
       const data = await res.json();
 
-      console.log("UPLOAD RESPONSE:", data); // debug
+      console.log("UPLOAD RESPONSE:", data);
 
-      if (!data.url) throw new Error("Upload failed");
+      // ✅ SUPPORT MULTIPLE BACKEND FORMATS
+      const imageUrl =
+        data.url ||
+        data.path ||
+        data.file ||
+        data.secure_url;
+
+      if (!imageUrl) {
+        throw new Error("No image URL returned from backend");
+      }
 
       if (type === "hero") {
-        handleChange("hero", "hero_image", data.url);
+        handleChange("hero", "hero_image", imageUrl);
       }
 
       if (type === "front") {
-        handleChange("hero", "front_image", data.url);
+        handleChange("hero", "front_image", imageUrl);
       }
 
       if (type === "back") {
-        handleChange("hero", "back_image", data.url);
+        handleChange("hero", "back_image", imageUrl);
       }
 
     } catch (error) {
-      console.error(error);
-      alert("Upload failed");
+      console.error("UPLOAD ERROR:", error);
+      alert("Upload failed — check backend API");
     } finally {
       setUploading(false);
     }
