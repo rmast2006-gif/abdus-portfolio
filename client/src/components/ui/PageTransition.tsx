@@ -47,8 +47,17 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
         }}
       />
 
-      {/* 🔥 LOGO SPLIT SYSTEM (SINGLE IMAGE) */}
-      <div className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none">
+      {/* 🔥 FIXED LOGO SYSTEM (THIS WAS THE BUG) */}
+      <motion.div
+        className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        exit={{ opacity: 1 }}
+        transition={{
+          duration: 0.4,
+          delay: 0.6, // disappear after merge
+        }}
+      >
 
         {/* TOP HALF */}
         <motion.div
@@ -88,7 +97,7 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
           exit={{ scale: 0 }}
           transition={{ duration: 0.6 }}
         />
-      </div>
+      </motion.div>
 
       {/* 🔥 TOP LIGHT SWEEP EFFECT */}
       <motion.div
