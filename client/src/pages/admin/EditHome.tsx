@@ -6,7 +6,7 @@ import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
 import ImageUpload from "../../components/admin/ImageUpload.tsx";
 
 // ─────────────────────────────────────────────
-// ADMIN EDIT HOME — FINAL STABLE VERSION
+// ADMIN EDIT HOME — FINAL STABLE VERSION (FIXED)
 // ─────────────────────────────────────────────
 const EditHome = () => {
 
@@ -16,7 +16,6 @@ const EditHome = () => {
   // STATES
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [content, setContent] = useState<any>({});
 
   // FETCH DATA
@@ -59,72 +58,6 @@ const EditHome = () => {
         [key]: value,
       },
     }));
-  };
-
-  // ✅ ULTRA SAFE UPLOAD (NO CRASH EVEN IF BACKEND FAILS)
-  const handleFileUpload = async (
-    file: File,
-    type: "front" | "back"
-  ) => {
-    try {
-      setUploading(true);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      let imageUrl = "";
-
-      if (res.ok) {
-        try {
-          const data = await res.json();
-          imageUrl =
-            data.url ||
-            data.path ||
-            data.file ||
-            data.secure_url ||
-            "";
-        } catch {
-          console.warn("JSON parse failed");
-        }
-      }
-
-      // ❗ FALLBACK: LOCAL PREVIEW (ALWAYS WORKS)
-      if (!imageUrl) {
-        imageUrl = URL.createObjectURL(file);
-        console.warn("Using local preview instead of backend upload");
-      }
-
-      if (type === "front") {
-        handleChange("hero", "front_image", imageUrl);
-      }
-
-      if (type === "back") {
-        handleChange("hero", "back_image", imageUrl);
-      }
-
-    } catch (error) {
-      console.error("UPLOAD ERROR:", error);
-
-      // ✅ STILL SHOW IMAGE EVEN IF API FAILS
-      const preview = URL.createObjectURL(file);
-
-      if (type === "front") {
-        handleChange("hero", "front_image", preview);
-      }
-
-      if (type === "back") {
-        handleChange("hero", "back_image", preview);
-      }
-
-      alert("Upload failed (preview used instead)");
-    } finally {
-      setUploading(false);
-    }
   };
 
   // SAVE
@@ -230,19 +163,15 @@ const EditHome = () => {
 
             <h3 className="text-white font-semibold">Flip Card Images</h3>
 
-            {/* FRONT */}
+            {/* FRONT IMAGE */}
             <div>
               <p className="text-slate-400 mb-2">Front Image</p>
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleFileUpload(e.target.files[0], "front");
-                  }
-                }}
-                className="text-white"
+              <ImageUpload
+                currentImage={content.hero?.front_image}
+                onUploadSuccess={(url: string) =>
+                  handleChange("hero", "front_image", url)
+                }
               />
 
               {content.hero?.front_image && (
@@ -253,19 +182,15 @@ const EditHome = () => {
               )}
             </div>
 
-            {/* BACK */}
+            {/* BACK IMAGE */}
             <div>
               <p className="text-slate-400 mb-2">Back Image</p>
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleFileUpload(e.target.files[0], "back");
-                  }
-                }}
-                className="text-white"
+              <ImageUpload
+                currentImage={content.hero?.back_image}
+                onUploadSuccess={(url: string) =>
+                  handleChange("hero", "back_image", url)
+                }
               />
 
               {content.hero?.back_image && (
