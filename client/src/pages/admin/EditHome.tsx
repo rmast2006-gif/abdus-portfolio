@@ -5,7 +5,7 @@ import { apiGetPageContent, apiUpdateContent } from "../../utils/api.ts";
 import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
 
 // ─────────────────────────────────────────────
-// ADMIN EDIT HOME — FULL LENGTH VERSION
+// ADMIN EDIT HOME — FULL LENGTH VERSION (FIXED UI)
 // ─────────────────────────────────────────────
 const EditHome = () => {
 
@@ -60,7 +60,7 @@ const EditHome = () => {
     }));
   };
 
-  // UPLOAD HANDLER (EXTENDED)
+  // UPLOAD HANDLER
   const handleFileUpload = async (file: File, type: "hero" | "front" | "back" = "hero") => {
     try {
       setUploading(true);
@@ -81,17 +81,9 @@ const EditHome = () => {
 
       if (!data.secure_url) throw new Error("Upload failed");
 
-      if (type === "hero") {
-        handleChange("hero", "hero_image", data.secure_url);
-      }
-
-      if (type === "front") {
-        handleChange("hero", "front_image", data.secure_url);
-      }
-
-      if (type === "back") {
-        handleChange("hero", "back_image", data.secure_url);
-      }
+      if (type === "hero") handleChange("hero", "hero_image", data.secure_url);
+      if (type === "front") handleChange("hero", "front_image", data.secure_url);
+      if (type === "back") handleChange("hero", "back_image", data.secure_url);
 
     } catch (error) {
       alert("Upload failed");
@@ -167,8 +159,8 @@ const EditHome = () => {
 
           <h2 className="text-xl text-white font-bold">Hero Section</h2>
 
-          {/* TEXT SECTION */}
-          <div className="space-y-6">
+          {/* ───────── TEXT FIRST (CLEAN STACK) ───────── */}
+          <div className="flex flex-col gap-6 w-full">
 
             <h3 className="text-white font-semibold">Text Content</h3>
 
@@ -177,7 +169,7 @@ const EditHome = () => {
               placeholder="Heading"
               value={content.hero?.heading || ""}
               onChange={(e) => handleChange("hero", "heading", e.target.value)}
-              className="input"
+              className="input w-full"
             />
 
             <input
@@ -185,7 +177,7 @@ const EditHome = () => {
               placeholder="Subheading"
               value={content.hero?.subheading || ""}
               onChange={(e) => handleChange("hero", "subheading", e.target.value)}
-              className="input"
+              className="input w-full"
             />
 
             <textarea
@@ -193,51 +185,19 @@ const EditHome = () => {
               placeholder="Bio"
               value={content.hero?.bio || ""}
               onChange={(e) => handleChange("hero", "bio", e.target.value)}
-              className="input"
+              className="input w-full resize-none"
             />
 
           </div>
 
-          {/* IMAGE SECTION */}
-          <div className="space-y-6">
+          {/* ───────── IMAGES AFTER TEXT ───────── */}
+          <div className="flex flex-col gap-8">
 
-            <h3 className="text-white font-semibold">Images</h3>
-
-            {/* HERO IMAGE */}
-            <div>
-              <p className="text-slate-400 mb-2">Hero Image (3D)</p>
-
-              <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleFileUpload(file, "hero");
-                }}
-                className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center text-slate-400 hover:border-fuchsia-500 cursor-pointer"
-              >
-                {uploading ? "Uploading..." : "Drag & Drop Image"}
-              </div>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleFileUpload(e.target.files[0], "hero");
-                  }
-                }}
-                className="mt-4 text-white"
-              />
-
-              {content.hero?.hero_image && (
-                <p className="text-green-400 mt-2">Hero Image uploaded ✔</p>
-              )}
-            </div>
+            <h3 className="text-white font-semibold">Flip Card Images</h3>
 
             {/* FRONT IMAGE */}
             <div>
-              <p className="text-slate-400 mb-2">Front Image (Flip Card)</p>
+              <p className="text-slate-400 mb-2">Front Image</p>
 
               <div
                 onDragOver={(e) => e.preventDefault()}
@@ -269,7 +229,7 @@ const EditHome = () => {
 
             {/* BACK IMAGE */}
             <div>
-              <p className="text-slate-400 mb-2">Back Image (Flip Card)</p>
+              <p className="text-slate-400 mb-2">Back Image</p>
 
               <div
                 onDragOver={(e) => e.preventDefault()}

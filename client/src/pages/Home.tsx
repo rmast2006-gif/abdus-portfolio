@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Code2, Rocket, Zap } from "lucide-react";
-import { HeroScene } from "../components/3d/HeroScene.tsx";
+// ❌ REMOVED HeroScene import (NOT USED ANYMORE)
 import { PageTransition } from "../components/ui/PageTransition.tsx";
 import { apiGetPageContent } from "../utils/api.ts";
 
-// ✅ NEW IMPORT (ADDED — NOTHING REMOVED)
 import FlipCard from "../components/ui/FlipCard";
 
 // ─────────────────────────────────────────────
@@ -14,12 +13,10 @@ import FlipCard from "../components/ui/FlipCard";
 // ─────────────────────────────────────────────
 export const Home = () => {
 
-  // ───────────────── STATE ─────────────────
   const [content, setContent] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // ───────────────── FETCH DATA ─────────────────
   useEffect(() => {
 
     const fetchContent = async () => {
@@ -46,7 +43,6 @@ export const Home = () => {
 
   }, []);
 
-  // ───────────────── FALLBACKS ─────────────────
   const hero = content.hero || {
     heading: "Abdus Samie Tahir",
     subheading: "(RMAST)",
@@ -64,21 +60,16 @@ export const Home = () => {
     stat3_label: "Code",
   };
 
-  // ───────────────── IMAGE FROM ADMIN ─────────────────
   const imageUrl = content.hero?.hero_image;
 
-  // ✅ NEW: FRONT & BACK IMAGE SUPPORT (ADMIN READY)
   const frontImage = content.hero?.front_image || imageUrl;
   const backImage = content.hero?.back_image || imageUrl;
 
-  // ───────────────── RENDER ─────────────────
   return (
     <PageTransition>
 
-      {/* MAIN SECTION */}
       <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#021a12]">
 
-        {/* 🔥 MULTI-LAYER PREMIUM BACKGROUND SYSTEM */}
         <div className="absolute inset-0 pointer-events-none">
 
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/20 blur-[140px] rounded-full" />
@@ -87,15 +78,12 @@ export const Home = () => {
 
         </div>
 
-        {/* GRID CONTAINER */}
         <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
 
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16">
 
-            {/* LEFT SIDE */}
             <div className="relative z-10">
 
-              {/* BADGE */}
               <motion.div
                 initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -40 }}
@@ -106,7 +94,6 @@ export const Home = () => {
                 </span>
               </motion.div>
 
-              {/* HEADING */}
               <motion.div
                 initial={{ opacity: 0, x: -60 }}
                 animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -60 }}
@@ -127,7 +114,6 @@ export const Home = () => {
                 </h1>
               </motion.div>
 
-              {/* BIO */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: mounted ? 1 : 0 }}
@@ -137,7 +123,6 @@ export const Home = () => {
                 {hero.bio}
               </motion.p>
 
-              {/* BUTTONS */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 30 }}
@@ -166,7 +151,6 @@ export const Home = () => {
 
               </motion.div>
 
-              {/* STATS */}
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 50 }}
@@ -198,17 +182,13 @@ export const Home = () => {
 
             </div>
 
-            {/* RIGHT SIDE — 3D IMAGE HOLDER */}
+            {/* RIGHT SIDE — FLIP CARD ONLY */}
             <div className="relative w-full h-[550px] flex items-center justify-center">
 
               <div className="absolute w-[400px] h-[400px] bg-green-500/20 blur-[120px] rounded-full" />
 
-              <div className="w-full h-full max-w-[500px] flex items-center justify-center flex-col gap-8">
+              <div className="w-full h-full max-w-[500px] flex items-center justify-center">
 
-                {/* EXISTING 3D — UNTOUCHED */}
-                <HeroScene imageUrl={imageUrl} />
-
-                {/* ✅ NEW FLIP CARD (ADMIN CONTROLLED) */}
                 <FlipCard
                   frontImage={frontImage}
                   backImage={backImage}
