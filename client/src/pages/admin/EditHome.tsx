@@ -5,7 +5,7 @@ import { apiGetPageContent, apiUpdateContent } from "../../utils/api.ts";
 import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
 
 // ─────────────────────────────────────────────
-// ADMIN EDIT HOME — FULL LENGTH VERSION (FIXED UI)
+// ADMIN EDIT HOME — FULL LENGTH VERSION (FIXED UPLOAD + UI)
 // ─────────────────────────────────────────────
 const EditHome = () => {
 
@@ -60,32 +60,43 @@ const EditHome = () => {
     }));
   };
 
-  // UPLOAD HANDLER
-  const handleFileUpload = async (file: File, type: "hero" | "front" | "back" = "hero") => {
+  // ✅ FIXED UPLOAD HANDLER (NO CLOUDINARY)
+  const handleFileUpload = async (
+    file: File,
+    type: "hero" | "front" | "back" = "hero"
+  ) => {
     try {
       setUploading(true);
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "YOUR_UPLOAD_PRESET");
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      // ✅ USE YOUR EXISTING BACKEND
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await res.json();
 
-      if (!data.secure_url) throw new Error("Upload failed");
+      console.log("UPLOAD RESPONSE:", data); // debug
 
-      if (type === "hero") handleChange("hero", "hero_image", data.secure_url);
-      if (type === "front") handleChange("hero", "front_image", data.secure_url);
-      if (type === "back") handleChange("hero", "back_image", data.secure_url);
+      if (!data.url) throw new Error("Upload failed");
+
+      if (type === "hero") {
+        handleChange("hero", "hero_image", data.url);
+      }
+
+      if (type === "front") {
+        handleChange("hero", "front_image", data.url);
+      }
+
+      if (type === "back") {
+        handleChange("hero", "back_image", data.url);
+      }
 
     } catch (error) {
+      console.error(error);
       alert("Upload failed");
     } finally {
       setUploading(false);
@@ -159,7 +170,7 @@ const EditHome = () => {
 
           <h2 className="text-xl text-white font-bold">Hero Section</h2>
 
-          {/* ───────── TEXT FIRST (CLEAN STACK) ───────── */}
+          {/* TEXT SECTION */}
           <div className="flex flex-col gap-6 w-full">
 
             <h3 className="text-white font-semibold">Text Content</h3>
@@ -190,7 +201,7 @@ const EditHome = () => {
 
           </div>
 
-          {/* ───────── IMAGES AFTER TEXT ───────── */}
+          {/* IMAGE SECTION */}
           <div className="flex flex-col gap-8">
 
             <h3 className="text-white font-semibold">Flip Card Images</h3>
