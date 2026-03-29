@@ -11,7 +11,7 @@ const FlipCard = ({ frontImage, backImage }: FlipCardProps) => {
     "https://via.placeholder.com/300x400?text=Back+Image";
 
   return (
-    <div className="group w-64 h-80 perspective hover:scale-105 transition duration-300">
+    <div className="group w-[320px] h-[320px] perspective hover:scale-105 transition duration-300">
 
       <div
         className="relative w-full h-full duration-700 ease-[cubic-bezier(0.25,0.8,0.25,1)] transform-style preserve-3d group-hover:rotate-y-180"
