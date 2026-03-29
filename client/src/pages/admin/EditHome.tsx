@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { apiGetPageContent, apiUpdateContent } from "../../utils/api.ts";
 import { useAdminAuth } from "../../hooks/useAdminAuth.ts";
+import ImageUpload from "../../components/admin/ImageUpload.tsx";
 
 // ─────────────────────────────────────────────
 // ADMIN EDIT HOME — FINAL STABLE VERSION
